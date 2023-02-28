@@ -1,10 +1,15 @@
 package routers
 
 import (
+	// "app/cmd/controllers"
 	"github.com/gofiber/fiber/v2"
-	 "app/cmd/middlewares"
-	 "app/cmd/controllers"
+	"app/cmd/handler"
+	//  "app/cmd/middlewares"
+	
+	 "github.com/gofiber/fiber/v2/middleware/logger"
 )
 func SetupRouters(app *fiber.App){
-	app.Get("/",middlewares.LoggerMiddleware,mainController.HomepageController)
+	admin := app.Group("/admin",logger.New())
+	admin.Get("/cource.json",handler.GetCourceList)
+	
 }

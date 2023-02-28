@@ -4,12 +4,13 @@ import (
    
     "github.com/gofiber/fiber/v2"
     // "github.com/gofiber/template/html"
-   
+    // "github.com/gofiber/fiber/middleware"
     "app/cmd/routers"
 )
 
 func main() {
     app := fiber.New()
+    
     routers.SetupRouters(app);
-    app.Listen(":3000")
+    app.Listen(":8000")
 }
