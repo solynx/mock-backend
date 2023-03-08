@@ -1,0 +1,34 @@
+Bảng "exams": Lưu trữ thông tin về các bài kiểm tra.
+
+id: khóa chính của bảng
+name: tên của bài kiểm tra
+type: loại của bài kiểm tra (ví dụ: trắc nghiệm, tự luận)
+category: loại chủ đề của bài kiểm tra (ví dụ: Toán học, Ngữ văn)
+swap_answer: cờ để cho phép tráo đổi câu trả lời
+swap_question: cờ để cho phép tráo đổi câu hỏi
+status: trạng thái của bài kiểm tra (ví dụ: đang mở, đã đóng)
+user_id: ID của người tạo bài kiểm tra
+metadata: dữ liệu meta khác về bài kiểm tra (nếu có)
+Bảng "questions": Lưu trữ thông tin về các câu hỏi trong bài kiểm tra.
+
+id: khóa chính của bảng
+exam_id: khóa ngoại liên kết đến bảng "exams"
+content: nội dung câu hỏi
+question_label: nhãn của câu hỏi
+question_order: thứ tự của câu hỏi trong bài kiểm tra
+Bảng "answers": Lưu trữ thông tin về các câu trả lời cho các câu hỏi trong bài kiểm tra.
+
+id: khóa chính của bảng
+question_id: khóa ngoại liên kết đến bảng "questions"
+content: nội dung câu trả lời
+is_correct: cờ để đánh dấu câu trả lời đúng
+
+Bảng "categories":
+
+id: khóa chính của bảng
+name: tên của loại chủ đề
+description: mô tả ngắn về loại chủ đề (nếu có)
+
+SELECT C.id ,C.title,C.description,C.price,C.sale_price,C.image_url,C.slug,C.owner_id,AVG(R.star) AS StarNum ,COUNT(R.course_id) AS TotalNum FROM courses AS C
+JOIN `reviews` AS R ON C.id = R.course_id
+Group BY C.id
