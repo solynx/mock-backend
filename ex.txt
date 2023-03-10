@@ -1,35 +1,55 @@
-Bảng "exams": Lưu trữ thông tin về các bài kiểm tra.
-
-id: khóa chính của bảng
-name: tên của bài kiểm tra
-type: loại của bài kiểm tra (ví dụ: trắc nghiệm, tự luận)
-category: loại chủ đề của bài kiểm tra (ví dụ: Toán học, Ngữ văn)
-swap_answer: cờ để cho phép tráo đổi câu trả lời
-swap_question: cờ để cho phép tráo đổi câu hỏi
-status: trạng thái của bài kiểm tra (ví dụ: đang mở, đã đóng)
-user_id: ID của người tạo bài kiểm tra
-metadata: dữ liệu meta khác về bài kiểm tra (nếu có)
-
-Bảng "questions": Lưu trữ thông tin về các câu hỏi trong bài kiểm tra.
-
-id: khóa chính của bảng
-exam_id: khóa ngoại liên kết đến bảng "exams"
-content: nội dung câu hỏi
-question_label: nhãn của câu hỏi
-question_order: thứ tự của câu hỏi trong bài kiểm tra
-Bảng "answers": Lưu trữ thông tin về các câu trả lời cho các câu hỏi trong bài kiểm tra.
-
-id: khóa chính của bảng
-question_id: khóa ngoại liên kết đến bảng "questions"
-content: nội dung câu trả lời
-is_correct: cờ để đánh dấu câu trả lời đúng
-
-Bảng "categories":
-
-id: khóa chính của bảng
-name: tên của loại chủ đề
-description: mô tả ngắn về loại chủ đề (nếu có)
-
-SELECT C.id ,C.title,C.description,C.price,C.sale_price,C.image_url,C.slug,C.owner_id,AVG(R.star) AS StarNum ,COUNT(R.course_id) AS TotalNum FROM courses AS C
-JOIN `reviews` AS R ON C.id = R.course_id
-Group BY C.id
+-- EXAM 
+    - (GET) ALL EXAM: localhost:8000/admin/exam.json
+            {
+            "id": "0a281988-a933-48b9-9e49-e0a9be42f841",
+            "name": "Bulma",
+            "type": "online",
+            "category_id": 1,
+            "content": "This is content 123",
+            "status": "this is status1",
+            "user_id": "a61a0fbb-7aee-43c7-b7a7-df9cf45a30f6",
+            "question_id": 1,
+            "created_at": "2023-03-10T10:57:33.574+07:00",
+            "updated_at": "2023-03-10T10:57:33.574+07:00"
+        },
+        {
+            "id": "0dca2b89-b6c8-417c-b466-820f4cbede2e",
+            "name": "Bul",
+            "type": "hand",
+            "category_id": 0,
+            "content": "This is content 1",
+            "status": "this is status",
+            "user_id": "848e3fd6-931f-45a1-b2f2-573a8605c8a1",
+            "created_at": "2023-03-10T10:53:09.855+07:00",
+            "updated_at": "2023-03-10T10:53:09.855+07:00"
+        },
+        {
+            "id": "4b3cfd26-55b5-4c84-b4c8-9e1b9e566b80",
+            "name": "Bul",
+            "type": "hand",
+            "category_id": 1,
+            "content": "This is content 1",
+            "status": "this is status",
+            "user_id": "7b457473-5141-4a2c-9512-d0871fdfde36",
+            "question_id": 1,
+            "created_at": "2023-03-10T10:55:53.058+07:00",
+            "updated_at": "2023-03-10T10:55:53.058+07:00"
+        }
+    - (POST) CREATE EXAM localhost:8000/admin/exam.json
+            {
+                "data": {
+                    "Id": "0a281988-a933-48b9-9e49-e0a9be42f841",
+                    "name": "Bulma",
+                    "type": "online",
+                    "category_id": 1,
+                    "content": "This is content 123",
+                    "status": "this is status1",
+                    "UserId": "a61a0fbb-7aee-43c7-b7a7-df9cf45a30f6",
+                    "question_id": 1,
+                    "CreatedAt": "2023-03-10T10:57:33.574364369+07:00",
+                    "UpdatedAt": "2023-03-10T10:57:33.574364458+07:00"
+                },
+                "error": null,
+                "message": "the data created NOT successfully!",
+                "status": "failed"
+            }

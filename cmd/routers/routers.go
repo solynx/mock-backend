@@ -20,10 +20,10 @@ func SetupRouters(app *fiber.App) {
 	// admin.Post("/exam/actived.json", handler.ActiveExam)
 	//C - create
 
-	// //R - read
-	// admin.Get("/exam/details.json", handler.ExamDetail)
+	//R - read
+	admin.Get("/exam/details.json", handler.GetExamById)
 	// //U - update
-	// admin.Patch("/exam.json", handler.UpdateExam)
-	// //D - delete
-	// admin.Delete("/exam.json", handler.DeleteExam)
+	admin.Patch("/exam.json", handler.UpdateExam)
+	//D - delete
+	admin.Delete("/exam.json", handler.DeleteExam)
 }

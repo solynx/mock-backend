@@ -14,15 +14,15 @@ func CreateExam(db *gorm.DB, exam CreateExamStruct) (err error) {
 	result := db.Table("exams").Create(&exam)
 	return result.Error
 }
-func GetExamById(db *gorm.DB, id int) (exam Exam) {
-	db.Find(&exam, id)
-	return exam
+func GetExamById(db *gorm.DB, id string) (exam Exam, rows int64) {
+	result := db.Where("id = ?", id).Find(&exam)
+	return exam, result.RowsAffected
 }
 func UpdateExam(db *gorm.DB, exam UpdateExamStruct) bool {
-	result := db.Save(exam)
+	result := db.Table("exams").Where("id = ?", exam.Id).Updates(exam)
 	return result.RowsAffected > 0
 }
-func DeleteExam(db *gorm.DB, exam UpdateExamStruct) bool {
-	result := db.Delete(&exam)
+func DeleteExam(db *gorm.DB, exam DeleteExamStruct) bool {
+	result := db.Table("exams").Delete(&exam)
 	return result.RowsAffected > 0
 }
