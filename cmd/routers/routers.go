@@ -2,27 +2,28 @@ package routers
 
 import (
 	// "app/cmd/controllers"
-	"github.com/gofiber/fiber/v2"
+
 	"app/cmd/handler"
 
-	
-	 "github.com/gofiber/fiber/v2/middleware/logger"
-	
+	"github.com/gofiber/fiber/v2"
+
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
-func SetupRouters(app *fiber.App){
-	
-	admin := app.Group("/admin",logger.New())
-	// get all course
-	admin.Get("/course.json",handler.GetAllCourses)
-	
-	//active course
-	admin.Post("/course/actived.json",handler.ActiveCourse)
+
+func SetupRouters(app *fiber.App) {
+
+	admin := app.Group("/admin", logger.New())
+	// get all Exam
+	admin.Get("/exam.json", handler.GetAllExam)
+	admin.Post("/exam.json", handler.CreateExam)
+	// //active Exam
+	// admin.Post("/exam/actived.json", handler.ActiveExam)
 	//C - create
-	admin.Post("/course.json",handler.CreateCourse)
-	//R - read
-	admin.Get("/course/details.json",handler.CourseDetail)
-	//U - update
-	admin.Patch("course.json",handler.UpdateCourse)
-	//D - delete
-	admin.Delete("course.json",handler.DeleteCourse)
+
+	// //R - read
+	// admin.Get("/exam/details.json", handler.ExamDetail)
+	// //U - update
+	// admin.Patch("/exam.json", handler.UpdateExam)
+	// //D - delete
+	// admin.Delete("/exam.json", handler.DeleteExam)
 }

@@ -9,6 +9,7 @@ swap_question: cờ để cho phép tráo đổi câu hỏi
 status: trạng thái của bài kiểm tra (ví dụ: đang mở, đã đóng)
 user_id: ID của người tạo bài kiểm tra
 metadata: dữ liệu meta khác về bài kiểm tra (nếu có)
+
 Bảng "questions": Lưu trữ thông tin về các câu hỏi trong bài kiểm tra.
 
 id: khóa chính của bảng
