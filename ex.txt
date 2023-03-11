@@ -53,3 +53,39 @@
                 "message": "the data created NOT successfully!",
                 "status": "failed"
             }
+   - (PATCH) UPDATE EXAM localhost:8000/admin/exam.json?id=12361496-131f-490d-97d9-a1b42e894ebd
+            json with body: {
+                    "name":"Updated",
+                    "type": "online1",
+                    "content": "This is content 1213",
+                    "status":"this is status122",
+                    "category_id":1,
+                    "swap_answer":1,
+                    "swap_question":1,
+                    "question_id":1
+            response: {
+                        "data": {
+                            "id": "12361496-131f-490d-97d9-a1b42e894ebd",
+                            "name": "1",
+                            "type": "online1",
+                            "category_id": 1,
+                            "content": "This is content 1213",
+                            "swap_answer": 1,
+                            "swap_question": 1,
+                            "status": "this is status122",
+                            "question_id": 1,
+                            "UpdatedAt": "2023-03-10T14:27:32.760826165+07:00"
+                        },
+                        "error": null,
+                        "message": "the data updated successfully!",
+                        "status": "success"
+                    }
+                    } 
+    - (DELETE) DELETE EXAM  localhost:8000/admin/exam.json?id=304cb670-c96f-453d-ae4a-198c7f47e471
+            response:
+            {
+                "error": null,
+                "message": "The exam id 304cb670-c96f-453d-ae4a-198c7f47e471 deleted successfully !",
+                "status": "failed"
+            }
+                

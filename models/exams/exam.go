@@ -2,6 +2,7 @@ package exams
 
 import (
 	// "github.com/gofiber/fiber/v2"
+
 	"time"
 
 	"github.com/google/uuid"
@@ -52,5 +53,29 @@ type UpdateExamStruct struct {
 type DeleteExamStruct struct {
 	Id string `json:"id,omitempty" binding:"required"`
 }
+type Metadata struct {
+	ExamId  string `json:"-"`
+	Content string `json:"content"`
+}
 
-//exams response
+// exams response
+type ExamResponse struct {
+	Id           uuid.UUID `json:"id,omitempty"`
+	CreatedAt    time.Time ` json:"created_at,omitempty"`
+	UpdatedAt    time.Time ` json:"updated_at,omitempty"`
+	Name         string    ` json:"name, omitempty"`
+	Type         string    ` json:"type, omitempty"`
+	CategoryId   uint32    `json:"-"`
+	Category     string    `json:"category"`
+	Content      string    ` json:"content, omitempty"`
+	SwapAnswer   uint32    `json:"swap_answer,omitempty"`
+	SwapQuestion uint32    `json:"swap_question,omitempty"`
+	Status       string    `json:"-"`
+	UserId       uuid.UUID `json:"user_id,omitempty"`
+
+	Metadata []Metadata `gorm:"foreignKey:ExamId" json:"metadata,omitempty"`
+
+	QuestionId    uint32 `json:"-"`
+	QuestionOrder uint32 `json:"question_order"`
+	QuestionLabel string `json:"question_label"`
+}
