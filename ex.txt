@@ -88,4 +88,144 @@
                 "message": "The exam id 304cb670-c96f-453d-ae4a-198c7f47e471 deleted successfully !",
                 "status": "failed"
             }
-                
+--- DATA BASE Sidebar Template
+var collections = [
+  {
+    label: "New Collection",
+    key: "col_abcxyz",
+    folders: [
+      {
+        label: "folder1",
+        key: "aabbcc12",
+      },
+      {
+        label: "folder2",
+        key: "fd_aabbccaz",
+        requests: [
+          {
+            label: "Request1",
+            method: "Post",
+            key: "req_ndnd",
+            uri: "google.com",
+            response: [
+              {
+                label: "Response 1",
+                method: "Delete",
+                json_file: "link json file in storage",
+                key: "res_aksndasndf",
+              },
+              {
+                label: "Response 1",
+                method: "Post",
+                json_file: "link json file in storage",
+                key: "res_aksdkas2",
+              },
+            ],
+          },
+          {
+            label: "Request123",
+            method: "Post",
+            key: "req_ndnd",
+            uri: "google.com",
+            response: [
+              {
+                label: "Response 1",
+                method: "Patch",
+                json_file: "link json file in storag11e",
+                key: "res_aksndasnd12",
+              },
+              {
+                label: "Response 13",
+                method: "Post",
+                json_file: "link json file in storage1",
+                key: "res_aksdkas1",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    requests: [
+      {
+        label: "Request A",
+        key: "clt_req_1",
+        method: "Patch",
+        uri: "facebook.com",
+        response: [
+          {
+            label: "Response 1",
+            key: "col_req_resABC",
+            method: "patch",
+            json_link: "json file link in storage",
+          },
+          {
+            label: "Response 1",
+            key: "col_req_resABC",
+            method: "patch",
+            json_link: "json file link in storage",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "New Collection",
+    key: "col_abcxyz45",
+    folders: [
+      {
+        label: "folder1",
+        key: "aabbcc12354",
+      },
+      {
+        label: "folder2",
+        key: "fd_aabbccaz234",
+        requests: [
+          {
+            label: "Request1",
+            method: "Post",
+            key: "req_ndnd234",
+            uri: "google.com",
+            response: [
+              {
+                label: "Response 1",
+                method: "Delete",
+                json_file: "link json file in storage",
+                key: "res_aksndasndf1",
+              },
+              {
+                label: "Response 1",
+                method: "Post",
+                json_file: "link json file in storage",
+                key: "res_aksdkas21",
+              },
+            ],
+          },
+          {
+            label: "Request123",
+            method: "Post",
+            key: "req_ndnd12",
+            uri: "google.com",
+            response: [
+              {
+                label: "Response 1",
+                method: "Patch",
+                json_file: "link json file in storag11e",
+                key: "res_aksndasnd123",
+              },
+              {
+                label: "Response 13",
+                method: "Post",
+                json_file: "link json file in storage1",
+                key: "res_aksdkas12",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "New Collection2",
+    key: "abcxyz1",
+  },
+];

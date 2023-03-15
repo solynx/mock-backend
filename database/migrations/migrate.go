@@ -7,6 +7,12 @@ import (
 	"app/models/exams"
 	"app/models/questions"
 
+	// Collection import
+	"app/models/menu/collections"
+	"app/models/menu/folders"
+	"app/models/menu/requests"
+	"app/models/menu/responses"
+
 	"gorm.io/gorm"
 )
 
@@ -16,4 +22,8 @@ func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&answers.Answer{})
 	db.AutoMigrate(&questions.Question{})
 	db.AutoMigrate(&categories.Category{})
+	db.AutoMigrate(&collections.Collection{})
+	db.AutoMigrate(&folders.Folder{})
+	db.AutoMigrate(&requests.Request{})
+	db.AutoMigrate(&responses.Response{})
 }

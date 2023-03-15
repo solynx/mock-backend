@@ -5,54 +5,14 @@
       <div class="file-multiple">
         <n-dynamic-tags v-model:value="tags" />
       </div>
-      <div class="file-detail flex justify-between">
-        <div class="file-link">
-          <n-config-provider>
-            <n-card>
-              <n-space>
-                <NuxtLink to="abc"> Collection</NuxtLink>
-                <NuxtLink to="abc">/Folder</NuxtLink>
-                <NuxtLink to="abc">/Request</NuxtLink>
-                <NuxtLink to="abc">/Response</NuxtLink>
-              </n-space>
-            </n-card>
-          </n-config-provider>
+      <n-card>
+        <div class="file-detail flex justify-between">
+          <div class="file-link">
+            <FileLink></FileLink>
+          </div>
+          <FileOption></FileOption>
         </div>
-        <div class="file-option">
-          <n-config-provider>
-            <n-card>
-              <n-space>
-                <n-button text>
-                  <n-icon>
-                    <save-icon />
-                  </n-icon>
-                  Save
-                </n-button>
-                <n-button>
-                  <n-icon>
-                    <chevron-down-icon />
-                  </n-icon>
-                </n-button>
-                <n-button text>
-                  <n-icon>
-                    <more-icon />
-                  </n-icon>
-                </n-button>
-                <n-button text>
-                  <n-icon>
-                    <pencil-icon />
-                  </n-icon>
-                </n-button>
-                <n-button text>
-                  <n-icon>
-                    <moment-mode-icon />
-                  </n-icon>
-                </n-button>
-              </n-space>
-            </n-card>
-          </n-config-provider>
-        </div>
-      </div>
+      </n-card>
       <URIComponent></URIComponent>
       <div class="request-option">
         <QueryDataType></QueryDataType>
