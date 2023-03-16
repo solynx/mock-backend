@@ -8,7 +8,7 @@ import (
 )
 
 type Response struct {
-	Id           uuid.UUID `gorm:"type:char(36);primary_key;unique;not null" json:"id,omitempty"`
+	ID           uuid.UUID `gorm:"type:char(36);primary_key;unique;not null" json:"id,omitempty"`
 	Name         string    `gorm:"type:varchar(100);not null" json:"name, omitempty"`
 	FileLink     string    `gorm:"type:varchar(255);not null" json:"file_link, omitempty"`
 	Method       string    `gorm:"type:char(10);not null" json:"method,omitempty"`

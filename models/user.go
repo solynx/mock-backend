@@ -13,7 +13,7 @@ type User struct {
 	Name        string                   `gorm:"size:255;not null" json:"name"`
 	Email       string                   `gorm:"size:100;not null" json:"-"`
 	Password    string                   `gorm:"size:100;not null;" json:"-"`
-	Collections []collections.Collection `gorm:"references:UserId"`
+	Collections []collections.Collection `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE" json:"collections"`
 	CreatedAt   time.Time                `gorm:"type:timestamp;default:CURRENT_TIMESTAMP" json:"-"`
 	UpdatedAt   time.Time                `gorm:"type:timestamp;default:CURRENT_TIMESTAMP" json:"-"`
 }

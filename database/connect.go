@@ -10,9 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
-const DB_USERNAME_STR = "root"
-const DB_PASSWORD_STR = "my-secret-pw"
-const DB_NAME_STR = "db_mockapiserver"
+const DB_USERNAME_STR = "admin"
+const DB_PASSWORD_STR = "admin@1234"
+const DB_NAME_STR = "project_training"
 const DB_HOST_NUM = "localhost"
 const DB_PORT_NUM = "3306"
 

@@ -27,11 +27,7 @@
         </li>
       </ul>
       <ul class="sidebar__group__collection">
-        <n-collapse
-          :arrow="false"
-          :accordion="true"
-          v-for="collection in collections"
-        >
+        <n-collapse :arrow="false" :accordion="true" v-for="collection in col">
           <n-collapse-item
             :title="`${collection.label}`"
             :name="collection.key"
@@ -198,6 +194,7 @@ const treeOptions = [
     key: "key2",
   },
 ];
+
 var collections = [
   {
     label: "New Collection",
@@ -338,6 +335,7 @@ var collections = [
     key: "abcxyz1",
   },
 ];
+var col = ref(collections);
 const folderOptions = [
   {
     label: "Edit",
@@ -388,14 +386,14 @@ const toggleButton = (status: any) => {
   console.log(toggle.value);
 };
 const newCollection = () => {
-  console.log(typeof collections);
-  return;
+  console.log(col);
+
   var collection = {
     label: "New Collection",
     key: "abcs",
     folders: [],
     requests: [],
   };
-  collections = collections.push(collection);
+  col.value.push(collection);
 };
 </script>

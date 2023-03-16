@@ -96,7 +96,7 @@ var collections = [
     folders: [
       {
         label: "folder1",
-        key: "aabbcc12",
+        key: "aabbcc12ss",
       },
       {
         label: "folder2",
