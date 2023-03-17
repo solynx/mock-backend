@@ -3,6 +3,7 @@ package collection_handler
 import (
 	"app/database"
 	"app/models/menu/collections"
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,14 +13,16 @@ import (
 func GetAllCollections(c *fiber.Ctx) error {
 	db := database.ConnectDBLocal()
 	data := collections.GetMenu(db)
+	c.Append("Access-Control-Allow-Origin", "*")
 	return c.JSON(fiber.Map{"error": nil, "message": "Success", "status": false, "data": data})
 }
 func CreateNewCollection(c *fiber.Ctx) error {
 	collection := new(collections.Collection)
+	c.Append("Access-Control-Allow-Origin", "*")
 	if err := c.BodyParser(&collection); err != nil {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
-	collection.ID = uuid.New()
+	fmt.Printf("%+v\n", collection)
 	collection.CreatedAt = time.Now()
 	collection.UpdatedAt = time.Now()
 	collection.UserId = 1
@@ -29,6 +32,7 @@ func CreateNewCollection(c *fiber.Ctx) error {
 	if err != nil {
 		return c.JSON(fiber.Map{"error": err, "message": "The collection created don't successfully!", "status": false})
 	}
+
 	return c.JSON(fiber.Map{"error": nil, "message": "The collection created successfully!", "status": true, "item": data})
 }
 func UpdateCollection(c *fiber.Ctx) error {

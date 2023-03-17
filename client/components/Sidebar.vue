@@ -27,14 +27,15 @@
         </li>
       </ul>
       <ul class="sidebar__group__collection">
-        <n-collapse :arrow="false" :accordion="true" v-for="collection in col">
-          <n-collapse-item
-            :title="`${collection.label}`"
-            :name="collection.key"
-          >
+        <n-collapse
+          :arrow="false"
+          :accordion="true"
+          v-for="collection in collections"
+        >
+          <n-collapse-item :title="`${collection.name}`" :name="collection.id">
             <!-- FOLDERS IN COLLECTION-->
             <n-collapse v-for="folder in collection.folders">
-              <n-collapse-item :title="`${folder.label}`" :name="folder.label">
+              <n-collapse-item :title="`${folder.name}`" :name="folder.name">
                 <template #header-extra>
                   <n-space>
                     <NDropdown
@@ -54,8 +55,8 @@
                   <!-- Request In Folder-->
                   <n-collapse v-for="request in folder.requests">
                     <n-collapse-item
-                      :title="`${request.label}`"
-                      :name="request.key"
+                      :title="`${request.name}`"
+                      :name="request.id"
                     >
                       <template #header-extra>
                         <n-space>
@@ -75,9 +76,9 @@
                       <!-- RESPONSE IN REQUEST OF folders-->
 
                       <n-collapse-item
-                        v-for="res in request.response"
-                        :title="`${res.label}`"
-                        :name="res.key"
+                        v-for="res in request.responses"
+                        :title="`${res.name}`"
+                        :name="res.id"
                       >
                         <template #header-extra>
                           <n-space>
@@ -102,7 +103,7 @@
             </n-collapse>
             <!-- REQUEST IN COLLECTION-->
             <n-collapse v-for="request in collection.requests">
-              <n-collapse-item :title="`${request.label}`" :name="request.key">
+              <n-collapse-item :title="`${request.name}`" :name="request.id">
                 <template #header-extra>
                   <n-space>
                     <NDropdown
@@ -122,8 +123,8 @@
 
                 <n-collapse-item
                   v-for="res in request.response"
-                  :title="`${res.label}`"
-                  :name="res.key"
+                  :title="`${res.name}`"
+                  :name="res.id"
                 >
                   <template #header-extra>
                     <n-space>
@@ -180,6 +181,7 @@ import {
   FilterOutline as FilterIcon,
   EllipsisHorizontalOutline as MoreIcon,
 } from "@vicons/ionicons5";
+import { v4 as uuidv4 } from "uuid";
 const treeOptions = [
   {
     label: "Add Folder",
@@ -195,7 +197,7 @@ const treeOptions = [
   },
 ];
 
-var collections = [
+var collections1 = [
   {
     label: "New Collection",
     key: "col_abcxyz",
@@ -335,7 +337,15 @@ var collections = [
     key: "abcxyz1",
   },
 ];
-var col = ref(collections);
+//get all collection
+const { data: collections12 } = await useFetch(
+  "http://127.0.0.1:8000/admin/collection.json",
+  {}
+);
+const collections123 = JSON.parse(JSON.stringify(collections12.value));
+
+const collections = ref(collections123.data);
+
 const folderOptions = [
   {
     label: "Edit",
@@ -385,15 +395,31 @@ const toggleButton = (status: any) => {
   toggle.value = !status.value;
   console.log(toggle.value);
 };
-const newCollection = () => {
-  console.log(col);
 
+//Create New Collection
+const newCollection = async () => {
+  const uuid = uuidv4();
   var collection = {
-    label: "New Collection",
-    key: "abcs",
+    name: "New Collection",
+    id: uuid,
     folders: [],
     requests: [],
   };
-  col.value.push(collection);
+
+  const { data: status } = await useFetch(
+    "http://127.0.0.1:8000/admin/collection.json",
+    {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(collection),
+    }
+  );
+  const status1 = JSON.parse(JSON.stringify(status.value));
+  console.log(status1);
+  if (status1.status) {
+    collections.value.push(collection);
+  } else {
+    return alert("Created collection failed");
+  }
 };
 </script>
