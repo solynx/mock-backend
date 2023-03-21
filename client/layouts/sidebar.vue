@@ -1,12 +1,14 @@
 <template>
-  <div class="wrapper flex">
-    <Sidebar></Sidebar>
-    <Content></Content>
-  </div>
+  <NMessageProvider>
+    <div class="wrapper flex">
+      <Sidebar></Sidebar>
+      <Content></Content>
+    </div>
+  </NMessageProvider>
 </template>
 
-<script>
-export default {};
+<script lang="ts" setup>
+import { NMessageProvider } from "naive-ui";
 </script>
 
 <style></style>
