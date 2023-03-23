@@ -1,0 +1,16 @@
+<template>
+  <n-scrollbar style="max-height: 320px">
+    <div class="json-result w-full">
+      <div style="overflow: auto" class="px-12">
+        <n-code :code="code" language="json" show-line-numbers />
+      </div>
+    </div>
+  </n-scrollbar>
+</template>
+<script lang="ts" setup>
+import { NScrollbar, NCode } from "naive-ui";
+
+const props = defineProps({
+  code: String,
+});
+</script>

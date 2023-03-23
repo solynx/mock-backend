@@ -8,67 +8,35 @@
       <n-card>
         <div class="file-detail flex justify-between">
           <div class="file-link">
-            <FileLink></FileLink>
+            <FileLink :link="item_link"></FileLink>
           </div>
           <FileOption></FileOption>
         </div>
       </n-card>
-      <URIComponent></URIComponent>
-      <div class="request-option">
-        <QueryDataType></QueryDataType>
-        <QueryTypeY></QueryTypeY>
-      </div>
+
+      <URIComponent
+        :uri="item"
+        @change_link="getRequest"
+        :filter_param="filteredQueryParam.value"
+      ></URIComponent>
 
       <div class="group-func flex">
         <n-card>
           <div class="group-fun-query">
-            <n-scrollbar style="max-height: 320px">
-              <div class="query-group w-full">
-                <NTable :bordered="false" :single-line="false">
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>Key</th>
-                      <th>Value</th>
-                      <th>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td></td>
-                      <td>...</td>
-                      <td>Damn it! I</td>
-                      <td>...</td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td>...</td>
-                      <td>...</td>
-                      <td>...</td>
-                    </tr>
-                  </tbody>
-                </NTable>
-              </div>
-            </n-scrollbar>
+            <div class="request-option">
+              <QueryDataType></QueryDataType>
+            </div>
           </div>
         </n-card>
-        <n-scrollbar style="max-height: 320px">
-          <div class="json-result w-full">
-            <NConfigProvider :hljs="hljs">
-              <div style="overflow: auto">
-                <n-code :code="code" language="cpp" show-line-numbers />
-              </div>
-            </NConfigProvider>
-          </div>
-        </n-scrollbar>
+
+        <n-config-provider :hljs="hljs">
+          <ResponseData :code="code"></ResponseData>
+        </n-config-provider>
       </div></div
   ></n-card>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, ref } from "vue";
-import hljs from "highlight.js/lib/core";
-import javascript from "highlight.js/lib/languages/javascript";
 import {
   SaveOutline as SaveIcon,
   ChevronDownOutline as ChevronDownIcon,
@@ -100,8 +68,14 @@ import {
   NScrollbar,
   NRadio,
 } from "naive-ui";
+import hljs from "highlight.js/lib/core";
+import json from "highlight.js/lib/languages/json";
+hljs.registerLanguage("json", json);
 
-hljs.registerLanguage("javascript", javascript);
+const props = defineProps({
+  item: Object,
+  item_link: Array,
+});
 
 const cascaderOptions = [
   {
@@ -116,41 +90,53 @@ const cascaderOptions = [
   },
 ];
 
-const code = `#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  cout <<"\\n" <<endl;
-  return 0;
-}`;
-
+const code = `[
+    {
+        "name":"coll1",
+        "id":"1",
+        "folder":[
+            {
+                "name":"fol1",
+                "id":"2",
+                "requests":[
+                    {
+                        "name":"request1",
+                        "id":"6"
+                    }
+                ]
+            }
+        ]
+    },
+     {
+        "name":"coll1",
+        "id":"4",
+        "folder":[
+            {
+                "name":"fol1",
+                "id":"1"
+            }
+        ]
+    }
+]`;
+const getRequest = (request_detail: object) => {
+  console.log(request_detail);
+};
+const uri_param = ref("");
+const filteredQueryParam = ref([]);
+const toggleQueryParam = (activeQuery: Array, queryParamList: Array) => {
+  // activeQuery.sort((a, b) => a - b);
+  // const filteredValues = queryParamList.filter((value, index) => {
+  //   return activeQuery.includes(index);
+  // });
+  // filteredQueryParam.value = filteredValues;
+  // return updateUri(filteredQueryParam.value);
+  console.log(queryParamList);
+  filteredQueryParam.value = queryParamList;
+};
+const updateUri = (params: Array) => {
+  filteredQueryParam.value = params;
+  const query_params = useState("");
+};
 const tags = ref(["teacher", "programmer"]);
 const checkedValueRef = ref<string | null>(null);
 const checkedValue = checkedValueRef;

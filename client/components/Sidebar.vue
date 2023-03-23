@@ -30,7 +30,7 @@
         <n-collapse
           :arrow="false"
           :accordion="true"
-          v-for="(collection, index) in collections12"
+          v-for="(collection, index) in props.collections"
         >
           <n-collapse-item
             :title="`${collection.name}`"
@@ -119,7 +119,18 @@
                 </template>
                 <n-collapse>
                   <!-- Request In Folder-->
-                  <n-collapse v-for="(request, index) in folder.requests">
+                  <n-collapse
+                    v-for="(request, index) in folder.requests"
+                    @click="
+                      getItemSelected(
+                        [
+                          { id: collection.id, name: collection.name },
+                          { id: folder.id, name: folder.name },
+                        ],
+                        request
+                      )
+                    "
+                  >
                     <n-collapse-item
                       :title="`${request.name}`"
                       :name="request.id"
@@ -323,6 +334,10 @@ import {
   EllipsisHorizontalOutline as MoreIcon,
 } from "@vicons/ionicons5";
 import { v4 as uuidv4 } from "uuid";
+const props = defineProps({
+  collections: Array,
+});
+const emit = defineEmits(["item-selected"]);
 const message = useMessage();
 const treeOptions = [
   {
@@ -343,147 +358,6 @@ const treeOptions = [
   },
 ];
 
-var collections1 = [
-  {
-    name: "New Collection",
-    id: "col_abcxyz111",
-    folders: [
-      {
-        name: "folder1",
-        id: "aabbcc12",
-        requests: [],
-      },
-      {
-        name: "folder2",
-        id: "fd_aabbccaz",
-        requests: [
-          {
-            name: "Request1",
-            method: "Post",
-            id: "req_ndnd",
-            uri: "google.com",
-            responses: [
-              {
-                name: "Response 1",
-                method: "Delete",
-                json_file: "link json file in storage",
-                id: "res_aksndasndf",
-              },
-              {
-                name: "Response 1",
-                method: "Post",
-                json_file: "link json file in storage",
-                id: "res_aksdkas2",
-              },
-            ],
-          },
-          {
-            name: "Request123",
-            method: "Post",
-            id: "req_ndnd",
-            uri: "google.com",
-            responses: [
-              {
-                name: "Response 1",
-                method: "Patch",
-                json_file: "link json file in storag11e",
-                id: "res_aksndasnd12",
-              },
-              {
-                name: "Response 13",
-                method: "Post",
-                json_file: "link json file in storage1",
-                id: "res_aksdkas1",
-              },
-            ],
-          },
-        ],
-      },
-    ],
-    requests: [
-      {
-        name: "Request A",
-        id: "clt_req_1",
-        method: "Patch",
-        uri: "facebook.com",
-        responses: [
-          {
-            name: "Response 1",
-            id: "col_req_resABC",
-            method: "patch",
-            json_link: "json file link in storage",
-          },
-          {
-            name: "Response 1",
-            id: "col_req_resABC",
-            method: "patch",
-            json_link: "json file link in storage",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: "New Collection",
-    id: "col_abcxyz45",
-    folders: [
-      {
-        name: "folder1",
-        id: "aabbcc12354",
-      },
-      {
-        name: "folder2",
-        id: "fd_aabbccaz234",
-        requests: [
-          {
-            name: "Request1",
-            method: "Post",
-            id: "req_ndnd234",
-            uri: "google.com",
-            responses: [
-              {
-                name: "Response 1",
-                method: "Delete",
-                json_file: "link json file in storage",
-                id: "res_aksndasndf1",
-              },
-              {
-                name: "Response 1",
-                method: "Post",
-                json_file: "link json file in storage",
-                id: "res_aksdkas21",
-              },
-            ],
-          },
-          {
-            name: "Request123",
-            method: "Post",
-            id: "req_ndnd12",
-            uri: "google.com",
-            responses: [
-              {
-                name: "Response 1",
-                method: "Patch",
-                json_file: "link json file in storag11e",
-                id: "res_aksndasnd123",
-              },
-              {
-                name: "Response 13",
-                method: "Post",
-                json_file: "link json file in storage1",
-                id: "res_aksdkas12",
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: "New Collection2",
-    id: "abcxyz1",
-  },
-];
 //get all collection
 // const { data: collections12 } = await useFetch(
 //   "http://127.0.0.1:8000/admin/collection.json",
@@ -493,50 +367,6 @@ var collections1 = [
 
 // const collections = ref(collections123.data);
 
-const folderA = [
-  {
-    label: "Edit",
-    key: "key1",
-  },
-  {
-    label: "Delete",
-    key: "key2",
-  },
-  {
-    label: "Add Request",
-    key: "key23",
-  },
-];
-const requestOptions = [
-  {
-    label: "Edit",
-    key: "key1",
-  },
-  {
-    label: "Delete",
-    key: "key2",
-  },
-  {
-    label: "Add Response",
-    key: "key3",
-  },
-];
-const responseOptions = [
-  {
-    label: "Edit",
-    key: "key1",
-  },
-  {
-    label: "Delete",
-    key: "key2",
-  },
-];
-const NearFilterOptions = [
-  {
-    label: "Open Trash",
-    key: "key1",
-  },
-];
 // const toggle = ref(false);
 // const toggleButton = (status: any) => {
 //   toggle.value = !status.value;
@@ -545,7 +375,7 @@ const NearFilterOptions = [
 const editingIndex = ref("a");
 const inputInstRef = ref<InputInst | null>(null);
 //Create New Collection
-const collections12 = ref(collections1);
+// const collections12 = ref(collections);
 const mode = ref(true);
 
 const newCollection = () => {
@@ -556,7 +386,8 @@ const newCollection = () => {
     folders: [],
     requests: [],
   };
-  collections12.value.push(collection);
+  props.collections.push(collection);
+
   // const { data: status } = await useFetch(
   //   "http://127.0.0.1:8000/admin/collection.json",
   //   {
@@ -599,7 +430,7 @@ const addRequest = (collection: object, folder?: object) => {
       name: "New Request",
       folder_id: folder.id,
       collection_id: collection.id,
-      url_component: "",
+      uri_component: "",
       method: "GET",
       responses: [],
     };
@@ -611,7 +442,7 @@ const addRequest = (collection: object, folder?: object) => {
     name: "New Request",
     folder_id: null,
     collection_id: collection.id,
-    url_component: "",
+    uri_component: "",
     method: "GET",
     responses: [],
   };
@@ -675,5 +506,9 @@ const deleteResponse = (request: object, response: object, index: number) => {
 };
 const editResponse = (response: object, new_name: string) => {
   response.name = new_name;
+};
+// content action
+const getItemSelected = (bread_cum: Array, item: object) => {
+  emit("item-selected", bread_cum, item);
 };
 </script>

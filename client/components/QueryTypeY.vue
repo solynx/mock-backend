@@ -3,21 +3,23 @@
     <n-select
       :options="selectOptions"
       v-model:value="HttpType"
-      class="w-2/12"
+      class="w-5/12"
     />
     <n-select
+      v-if="HttpType === 'raw'"
       :options="selectDataTypeInRawOfBody"
       v-model:value="DataType"
-      class="w-1/12"
+      class="w-3/12"
     />
   </div>
+  <BodyLayer :layer="HttpType" />
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, ref } from "vue";
 import { SelectOption, SelectGroupOption, NSelect } from "naive-ui";
-const HttpType = ref("None");
-const DataType = ref("text");
+const HttpType = ref("none");
+const DataType = ref("json");
 const selectDataTypeInRawOfBody = [
   { label: "Text", value: "text", key: "key11" },
   { label: "JavaScript", value: "js", key: "key12" },
@@ -27,11 +29,11 @@ const selectDataTypeInRawOfBody = [
 ];
 
 const selectOptions = [
-  { label: "none", value: "None", key: "key11" },
-  { label: "form-data", value: "POST", key: "form-data" },
+  { label: "none", value: "none", key: "key11" },
+  { label: "form-data", value: "form-data", key: "form-data" },
   {
     label: "x-www-form-urlencoded",
-    value: "urlencoded",
+    value: "x-www-form-urlencoded",
     key: "key12",
   },
   {
