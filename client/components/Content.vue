@@ -124,7 +124,7 @@ const toggleQueryParam = (activeQuery: Array, queryParamList: Array) => {
   // });
   // filteredQueryParam.value = filteredValues;
   // return updateUri(filteredQueryParam.value);
-  console.log(queryParamList);
+
   filteredQueryParam.value = queryParamList;
 };
 const updateUri = (params: Array) => {
