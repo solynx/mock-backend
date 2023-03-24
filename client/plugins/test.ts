@@ -4,10 +4,12 @@ export default defineNuxtPlugin((/* nuxtApp */) => {
  
     return {
       provide: {
-        myPlugin: () => 
-            "?"+data1.value.map((item) => `${item.param}=${item.value}`).join("&")
+        myPlugin: {
+            
+            showUri : () =>"?"+data1.value.map((item) => `${item.param}=${item.value}`).join("&")
    
-      
+        },
+        newUri: (uri:string,query:string) => `${uri}${query}` 
       
       }
     }

@@ -1,8 +1,9 @@
 <template>
+  {{ code_res.value }}
   <n-scrollbar style="max-height: 320px">
     <div class="json-result w-full">
       <div style="overflow: auto" class="px-12">
-        <n-code :code="code" language="json" show-line-numbers />
+        <n-code :code="code_res" language="json" show-line-numbers />
       </div>
     </div>
   </n-scrollbar>
@@ -10,7 +11,8 @@
 <script lang="ts" setup>
 import { NScrollbar, NCode } from "naive-ui";
 
-const props = defineProps({
-  code: String,
-});
+// const props = defineProps({
+//   code: String,
+// });
+const code_res = useState("code_response");
 </script>

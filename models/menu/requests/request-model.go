@@ -7,12 +7,9 @@ import (
 func GetMenu(db *gorm.DB) (requests []Request) {
 	return requests
 }
-func CreateARequest(db *gorm.DB, request Request) (id string) {
+func CreateARequest(db *gorm.DB, request Request) bool {
 	result := db.Create(&request)
-	if result.RowsAffected > 0 {
-		return request.ID.String()
-	}
-	return result.Error.Error()
+	return result.RowsAffected > 0
 }
 func UpdateRequestById(db *gorm.DB, request Request) bool {
 	result := db.Table("requests").Debug().Where("id = ?", request.ID).Updates(request)

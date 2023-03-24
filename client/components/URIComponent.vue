@@ -1,8 +1,6 @@
 <template>
   <NSpace vertical>
-    {{ $myPlugin() }}
-    <input v-model="test12.value" />
-    {{ test12.value }}
+    <input v-model="ac" />
     <NInputGroup>
       <NSelect
         :options="selectOptions"
@@ -35,13 +33,12 @@ const props = defineProps({
   filter_param: Array,
 });
 const { $myPlugin } = useNuxtApp();
+const abc = computed(() => props.uri.uri_component + $myPlugin.showUri());
+const ac = useState("fake", $myPlugin.showUri());
 
-const same_counter = useUriQP();
-const test12 = ref($myPlugin());
-console.log(test12.value);
-const qp = same_counter.value;
 const emit = defineEmits(["change_link"]);
 const Method = ref("GET");
+
 const upperCaseMethod = computed(() =>
   props.uri.method ? props.uri.method.toUpperCase() : null
 );

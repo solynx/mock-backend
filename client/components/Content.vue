@@ -21,7 +21,7 @@
       ></URIComponent>
 
       <div class="group-func flex">
-        <n-card>
+        <n-card style="width: 60%; min-width: 50%">
           <div class="group-fun-query">
             <div class="request-option">
               <QueryDataType></QueryDataType>
@@ -29,11 +29,17 @@
           </div>
         </n-card>
 
-        <n-config-provider :hljs="hljs">
-          <ResponseData :code="code"></ResponseData>
+        <n-config-provider style="width: 40%; max-width: 50%" :hljs="hljs">
+          <n-loading-bar-provider>
+            <NSpin :show="!disabledRef" size="small">
+              <ResponseData></ResponseData>
+              <template #description> Just moment... </template>
+            </NSpin>
+          </n-loading-bar-provider>
         </n-config-provider>
-      </div></div
-  ></n-card>
+      </div>
+    </div></n-card
+  >
 </template>
 
 <script lang="ts" setup>
@@ -67,6 +73,8 @@ import {
   NTransfer,
   NScrollbar,
   NRadio,
+  useLoadingBar,
+  NSpin,
 } from "naive-ui";
 import hljs from "highlight.js/lib/core";
 import json from "highlight.js/lib/languages/json";
@@ -76,7 +84,8 @@ const props = defineProps({
   item: Object,
   item_link: Array,
 });
-
+const loadingBar = useLoadingBar();
+const disabledRef = ref(true);
 const cascaderOptions = [
   {
     label: "option-1",
@@ -90,36 +99,21 @@ const cascaderOptions = [
   },
 ];
 
-const code = `[
-    {
-        "name":"coll1",
-        "id":"1",
-        "folder":[
-            {
-                "name":"fol1",
-                "id":"2",
-                "requests":[
-                    {
-                        "name":"request1",
-                        "id":"6"
-                    }
-                ]
-            }
-        ]
-    },
-     {
-        "name":"coll1",
-        "id":"4",
-        "folder":[
-            {
-                "name":"fol1",
-                "id":"1"
-            }
-        ]
-    }
-]`;
-const getRequest = (request_detail: object) => {
-  console.log(request_detail);
+const code = useState("code_response", () => "");
+const getRequest = async (request_detail: object) => {
+  loadingBar.start();
+  disabledRef.value = false;
+  let result;
+  const { data: status } = await useFetch(request_detail.link, {
+    method: request_detail.method,
+    headers: { "Content-type": "application/json" },
+  });
+  result = JSON.parse(JSON.stringify(status.value));
+  loadingBar.finish();
+  disabledRef.value = true;
+  code.value = JSON.stringify(result, null, 1);
+
+  return;
 };
 const uri_param = ref("");
 const filteredQueryParam = ref([]);
