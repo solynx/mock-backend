@@ -6,6 +6,7 @@ import (
 	"app/cmd/handler"
 	collection_handler "app/cmd/handler/collection"
 	folder_handler "app/cmd/handler/folder"
+	mockapi "app/cmd/handler/mock-api"
 	request_handler "app/cmd/handler/request"
 	response_handler "app/cmd/handler/response"
 
@@ -16,6 +17,12 @@ import (
 
 func SetupRouters(app *fiber.App) {
 
+	mockApi := app.Group("/mock-api", logger.New())
+	api := app.Group("/api", logger.New())
+	api.All("*", mockapi.CheckMock)
+	mockApi.Post("/new", mockapi.NewMockApi)          //mock-api/new
+	mockApi.All("/delete", mockapi.RemoveMockApi)     //mock-api/delete
+	mockApi.All("/update", mockapi.CreateOrUpdateApi) //mock-api/update
 	admin := app.Group("/admin", logger.New())
 	// get all Exam
 	admin.Get("/exam.json", handler.GetAllExam)
@@ -45,4 +52,5 @@ func SetupRouters(app *fiber.App) {
 	admin.Post("/response.json", response_handler.CreateNewResponse)
 	admin.Patch("/response.json", response_handler.Updateresponse)
 	admin.Delete("/response.json", response_handler.RemoveResponse)
+
 }

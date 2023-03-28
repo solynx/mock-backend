@@ -39,6 +39,7 @@
                 <span @click="Alo()" v-if="editingIndex !== collection.id">
                   {{ collection.name }}</span
                 >
+
                 <input
                   v-else
                   type="text"
@@ -46,6 +47,57 @@
                   @blur="handleBlur"
                   @keyup.enter="saveNameCollection(collection, name)"
                 />
+                <n-button
+                  size="tiny"
+                  secondary
+                  type="tertiary"
+                  @click="exportModal"
+                >
+                  <small> Export</small>
+                </n-button>
+                <n-modal
+                  v-model:show="mode"
+                  class="custom-card"
+                  preset="card"
+                  :style="{ width: 600 + 'px' }"
+                  title="Export Collection"
+                  :bordered="false"
+                  size="huge"
+                  :segmented="segmented"
+                >
+                  <div><b>Collection Name</b></div>
+                  <div>will be exported as a JSON file. Export as:</div>
+                  <n-radio-group v-model:value="json_version" name="radiogroup">
+                    <n-space>
+                      <n-radio
+                        key="Collectionv2"
+                        value="Collectionv2"
+                        label="Collection v2"
+                      />
+                      <br />
+                      <n-radio
+                        key="Collectionv2.1"
+                        value="Collectionv2.1"
+                        label="Collection v2.1 (recommended)"
+                      />
+                    </n-space>
+                  </n-radio-group>
+                  <template #footer>
+                    <n-space class="float-right">
+                      <n-button
+                        strong
+                        secondary
+                        type="tertiary"
+                        @click="exportModal"
+                      >
+                        Cancel
+                      </n-button>
+                      <n-button strong class="no-tailwind" color="#ff6c37">
+                        Export
+                      </n-button>
+                    </n-space>
+                  </template>
+                </n-modal>
               </template>
 
               <template #header-extra>
@@ -339,6 +391,9 @@ import {
   NPopover,
   InputInst,
   NScrollbar,
+  NModal,
+  NRadioGroup,
+  NRadio,
 } from "naive-ui";
 import {
   AddOutline as AddIcon,
@@ -369,7 +424,12 @@ const treeOptions = [
     id: "key2",
   },
 ];
-
+const options = [
+  {
+    label: "Marina Bay Sands",
+    key: "Marina Bay Sands",
+  },
+];
 // const toggle = ref(false);
 // const toggleButton = (status: any) => {
 //   toggle.value = !status.value;
@@ -379,7 +439,7 @@ const editingIndex = ref("a");
 const inputInstRef = ref<InputInst | null>(null);
 //Create New Collection
 // const collections12 = ref(collections);
-const mode = ref(true);
+const mode = ref(false);
 
 const newCollection = async () => {
   const uuid = uuidv4();
@@ -449,6 +509,7 @@ const saveNameCollection = async (el: object, new_name: string) => {
 };
 const toggleEdit = true;
 const optionName = ref(null);
+const json_version = ref("Collectionv2.1");
 let name = "A";
 //---- MORE ICON
 const handleSelect = (option: object) => {
@@ -723,4 +784,17 @@ const getItemSelected = (bread_cum: Array, item: object) => {
 const Alo = () => {
   console.log("Da");
 };
+
+const exportModal = () => {
+  mode.value = !mode.value;
+};
 </script>
+<style scoped>
+.no-tailwind {
+  margin-left: 20px;
+  background-color: #ff6c37 !important;
+}
+.no-tailwind:hover {
+  opacity: 0.8;
+}
+</style>

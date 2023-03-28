@@ -6,16 +6,16 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
 func GetAllCollections(c *fiber.Ctx) error {
-	db := database.ConnectDBLocal()
+	db := database.Database
 	data := collections.GetMenu(db)
 	c.Append("Access-Control-Allow-Origin", "*")
 	return c.JSON(fiber.Map{"error": nil, "message": "Success", "status": false, "data": data})
 }
 func CreateNewCollection(c *fiber.Ctx) error {
+	db := database.Database
 	collection := new(collections.Collection)
 	c.Append("Access-Control-Allow-Origin", "*")
 	if err := c.BodyParser(&collection); err != nil {
@@ -25,14 +25,14 @@ func CreateNewCollection(c *fiber.Ctx) error {
 	collection.CreatedAt = time.Now()
 	collection.UpdatedAt = time.Now()
 	collection.UserId = 1
-	db := database.ConnectDBLocal()
-	data := collections.CreateACollection(db, *collection)
-	_, err := uuid.Parse(data)
-	if err != nil {
-		return c.JSON(fiber.Map{"error": err, "message": "The collection created don't successfully!", "status": false})
-	}
 
-	return c.JSON(fiber.Map{"error": nil, "message": "The collection created successfully!", "status": true, "item": data})
+	result := collections.CreateACollection(db, *collection)
+
+	if result {
+		return c.JSON(fiber.Map{"error": nil, "message": "The collection created successfully!", "status": true})
+	}
+	return c.JSON(fiber.Map{"error": nil, "message": "The collection created don't successfully!", "status": false})
+
 }
 func UpdateCollection(c *fiber.Ctx) error {
 	c.Append("Access-Control-Allow-Origin", "*")
@@ -41,7 +41,7 @@ func UpdateCollection(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
 	collection.UpdatedAt = time.Now()
-	db := database.ConnectDBLocal()
+	db := database.Database
 	result := collections.UpdateCollectionById(db, *collection)
 	if result {
 		return c.JSON(fiber.Map{"error": nil, "message": "The data updated successfully!", "status": true})
@@ -56,7 +56,7 @@ func RemoveCollection(c *fiber.Ctx) error {
 	if err := c.BodyParser(&collection); err != nil {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
-	db := database.ConnectDBLocal()
+	db := database.Database
 	data := collections.Collection{}
 	data.ID = collection.ID
 	result := collections.RemoveCollection(db, data)

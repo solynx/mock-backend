@@ -9,7 +9,7 @@ import (
 )
 
 func GetAllRequests(c *fiber.Ctx) error {
-	db := database.ConnectDBLocal()
+	db := database.Database
 	data := requests.GetMenu(db)
 	return c.JSON(fiber.Map{"error": nil, "message": "Success", "status": false, "data": data})
 }
@@ -23,7 +23,7 @@ func CreateNewRequest(c *fiber.Ctx) error {
 	request.CreatedAt = time.Now()
 	request.UpdatedAt = time.Now()
 
-	db := database.ConnectDBLocal()
+	db := database.Database
 	result := requests.CreateARequest(db, *request)
 
 	if result {
@@ -39,7 +39,7 @@ func UpdateRequest(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
 	request.UpdatedAt = time.Now()
-	db := database.ConnectDBLocal()
+	db := database.Database
 	result := requests.UpdateRequestById(db, *request)
 	if result {
 		return c.JSON(fiber.Map{"error": nil, "message": "The data updated successfully!", "status": true})
@@ -53,7 +53,7 @@ func RemoveRequest(c *fiber.Ctx) error {
 	if err := c.BodyParser(&request); err != nil {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
-	db := database.ConnectDBLocal()
+	db := database.Database
 
 	result := requests.RemoveRequest(db, *request)
 	if result {

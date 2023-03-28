@@ -14,13 +14,24 @@ func GetMenu(db *gorm.DB) (collections []Collection) {
 	}).Find(&collections)
 	return collections
 }
-func CreateACollection(db *gorm.DB, collection Collection) (id string) {
+func CreateACollection(db *gorm.DB, collection Collection) bool {
+
 	result := db.Create(&collection)
-	if result.RowsAffected > 0 {
-		return collection.ID.String()
-	}
-	return result.Error.Error()
+	return result.RowsAffected > 0
 }
+func GetACollection(db *gorm.DB, collection Collection) bool {
+
+	result := db.Find(&collection)
+	return result.RowsAffected > 0
+}
+func CheckMockApi(db *gorm.DB, collection Collection) bool {
+	result := db.Find(&collection)
+	if result.RowsAffected > 0 {
+		return collection.IsServer
+	}
+	return false
+}
+
 func UpdateCollectionById(db *gorm.DB, collection Collection) bool {
 	result := db.Table("collections").Debug().Where("id = ?", collection.ID).Updates(collection)
 

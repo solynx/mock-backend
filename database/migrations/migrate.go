@@ -12,6 +12,7 @@ import (
 	"app/models/menu/folders"
 	"app/models/menu/requests"
 	"app/models/menu/responses"
+	mock_server "app/models/mock-server"
 
 	"gorm.io/gorm"
 )
@@ -21,6 +22,7 @@ func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&exams.Exam{})
 	db.AutoMigrate(&answers.Answer{})
 	db.AutoMigrate(&questions.Question{})
+	db.AutoMigrate(&mock_server.MockApi{})
 	db.AutoMigrate(&categories.Category{})
 	db.AutoMigrate(&collections.Collection{})
 	db.AutoMigrate(&folders.Folder{})

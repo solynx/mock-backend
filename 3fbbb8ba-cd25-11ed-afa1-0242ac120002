@@ -1,0 +1,23 @@
+{
+    "DELETE": null,
+    "GET": null,
+    "PATCH": null,
+    "POST": [
+        {
+            "path": "api/users",
+            "status_code": 200,
+            "collection_id": "00000000-0000-0000-0000-000000000000",
+            "response_body": [
+                {
+                    "age": 20,
+                    "name": "An"
+                },
+                {
+                    "age": 18,
+                    "name": "Lig"
+                }
+            ]
+        }
+    ],
+    "PUT": null
+}

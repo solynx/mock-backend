@@ -1,0 +1,35 @@
+{
+    "DELETE": null,
+    "GET": [
+        {
+            "path": "/api/bitcoin",
+            "status_code": 200,
+            "collection_id": "cd9d0366-cd3c-11ed-afa1-0242ac120002",
+            "response_body": [
+                {
+                    "age": 21,
+                    "name": "ALI",
+                    "total": 3
+                },
+                {
+                    "age": 22,
+                    "name": "Mike",
+                    "total": 21
+                },
+                {
+                    "age": 21,
+                    "name": "AI2023",
+                    "total": 98
+                },
+                {
+                    "age": 1,
+                    "name": "Join",
+                    "total": 1
+                }
+            ]
+        }
+    ],
+    "PATCH": null,
+    "POST": null,
+    "PUT": null
+}
