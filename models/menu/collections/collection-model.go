@@ -24,6 +24,26 @@ func GetACollection(db *gorm.DB, collection Collection) bool {
 	result := db.Find(&collection)
 	return result.RowsAffected > 0
 }
+func GetCollection(db *gorm.DB, collection Collection) Collection {
+	db.Table("collections").Debug().Preload("Folders", func(db *gorm.DB) *gorm.DB {
+		return db.Preload("Requests", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Responses")
+		})
+	}).Preload("Requests", func(db *gorm.DB) *gorm.DB {
+		return db.Where("`requests`.`folder_id` IS NULL").Preload("Responses")
+	}).Find(&collection)
+	return collection
+}
+func FormatCollection(db *gorm.DB, collection Collection) Collection {
+	db.Table("collections").Debug().Preload("Folders", func(db *gorm.DB) *gorm.DB {
+		return db.Preload("Requests", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Responses")
+		})
+	}).Preload("Requests", func(db *gorm.DB) *gorm.DB {
+		return db.Where("`requests`.`folder_id` IS NULL").Preload("Responses")
+	}).Find(&collection)
+	return collection
+}
 func CheckMockApi(db *gorm.DB, collection Collection) bool {
 	result := db.Find(&collection)
 	if result.RowsAffected > 0 {

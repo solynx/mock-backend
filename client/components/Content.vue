@@ -32,7 +32,12 @@
         <n-config-provider style="width: 40%; max-width: 50%" :hljs="hljs">
           <n-loading-bar-provider>
             <NSpin :show="!disabledRef" size="small">
-              <ResponseData></ResponseData>
+              <ResponseData v-if="item_selected === 'request'"></ResponseData>
+              <MockData
+                v-if="item_selected === 'response'"
+                @update_response="updateResponseBody"
+                @update_api="updateMockApi"
+              ></MockData>
               <template #description> Just moment... </template>
             </NSpin>
           </n-loading-bar-provider>
@@ -75,6 +80,7 @@ import {
   NRadio,
   useLoadingBar,
   NSpin,
+  useMessage,
 } from "naive-ui";
 import hljs from "highlight.js/lib/core";
 import json from "highlight.js/lib/languages/json";
@@ -84,6 +90,7 @@ const props = defineProps({
   item: Object,
   item_link: Array,
 });
+const message = useMessage();
 const loadingBar = useLoadingBar();
 const disabledRef = ref(true);
 const cascaderOptions = [
@@ -98,16 +105,25 @@ const cascaderOptions = [
     ],
   },
 ];
-
+const item_selected = useState("item_select");
 const code = useState("code_response", () => "");
-const getRequest = async (request_detail: object) => {
+const getRequest = async (request_detail: object, request: object) => {
   loadingBar.start();
   disabledRef.value = false;
   let result;
+  console.log(props.item);
   const { data: status } = await useFetch(request_detail.link, {
     method: request_detail.method,
     headers: { "Content-type": "application/json" },
   });
+  const { data: result1 } = await useFetch(
+    "http://localhost:8000/admin/request.json",
+    {
+      method: "PATCH",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(props.item),
+    }
+  );
   result = JSON.parse(JSON.stringify(status.value));
   loadingBar.finish();
   disabledRef.value = true;
@@ -134,4 +150,74 @@ const updateUri = (params: Array) => {
 const tags = ref(["teacher", "programmer"]);
 const checkedValueRef = ref<string | null>(null);
 const checkedValue = checkedValueRef;
+const response_saving = useState("response_saving");
+const collection_parent = useState("belong_collection");
+const updateResponseBody = async (response: object) => {
+  response_saving.value = true;
+  // console.log(response_saving.status);
+  // response_saving.opacity = true;
+  loadingBar.start();
+  disabledRef.value = false;
+  let result;
+  const { data: status } = await useFetch(
+    "http://localhost:8000/admin/response.json",
+    {
+      method: "PATCH",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(response),
+    }
+  );
+  result = JSON.parse(JSON.stringify(status.value));
+  loadingBar.finish();
+  disabledRef.value = true;
+  response_saving.value = false;
+  if (result.status) {
+    return message.success("Change body successfully!");
+  }
+  return message.error("Failed!");
+};
+const updateMockApi = async (response: object, path: string) => {
+  const api = {
+    collection_id: collection_parent.value.id,
+    path: path,
+    method: response.method,
+    status_code: 200,
+    response_body: response.body,
+  };
+
+  response_saving.value = true;
+
+  loadingBar.start();
+  disabledRef.value = false;
+  let result;
+  const method = response.method === "GET" ? "POST" : response.method;
+  const { data: status } = await useFetch(
+    "http://127.0.0.1:8000/mock-api/update",
+    {
+      method: method,
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(api),
+    }
+  );
+  result = JSON.parse(JSON.stringify(status.value));
+
+  if (result.status) {
+    const { data: status } = await useFetch(
+      "http://localhost:8000/admin/response.json",
+      {
+        method: "PATCH",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify(response),
+      }
+    );
+    result = JSON.parse(JSON.stringify(status.value));
+    loadingBar.finish();
+    disabledRef.value = true;
+    response_saving.value = false;
+    if (result.status) {
+      return message.success("Change Mock API successfully!");
+    }
+  }
+  return message.error("Failed!");
+};
 </script>

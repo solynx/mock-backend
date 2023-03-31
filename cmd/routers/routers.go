@@ -11,14 +11,15 @@ import (
 	response_handler "app/cmd/handler/response"
 
 	"github.com/gofiber/fiber/v2"
-
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func SetupRouters(app *fiber.App) {
+	app.Use(cors.New())
 
 	mockApi := app.Group("/mock-api", logger.New())
-	api := app.Group("/api", logger.New())
+	api := app.Group("/:uuid/api", logger.New())
 	api.All("*", mockapi.CheckMock)
 	mockApi.Post("/new", mockapi.NewMockApi)          //mock-api/new
 	mockApi.All("/delete", mockapi.RemoveMockApi)     //mock-api/delete
@@ -35,6 +36,8 @@ func SetupRouters(app *fiber.App) {
 	admin.Delete("/exam.json", handler.DeleteExam)
 
 	// ----------- COLLECTION
+	admin.Post("/single-collection.json", collection_handler.GetACollection)
+	admin.Post("/format-collection.json", collection_handler.FormatCollection)
 	admin.Get("/collection.json", collection_handler.GetAllCollections)
 	admin.Post("/collection.json", collection_handler.CreateNewCollection)
 	admin.Patch("/collection.json", collection_handler.UpdateCollection)

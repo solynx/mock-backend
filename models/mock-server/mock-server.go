@@ -10,8 +10,8 @@ import (
 )
 
 type MockApi struct {
-	ID        uuid.UUID `gorm:"type:char(36);primary_key;unique;not null" json:"id"`
-	BaseUrl   string    `gorm:"unique;not null" json:"base_url"`
+	ID uuid.UUID `gorm:"type:char(36);primary_key;unique;not null" json:"id"`
+
 	Name      string    `gorm:"type:varchar(255);not null" json:"name"`
 	CreatedAt time.Time `gorm:"not null" json:"created_at,omitempty"`
 	UpdatedAt time.Time `gorm:"not null" json:"updated_at,omitempty"`

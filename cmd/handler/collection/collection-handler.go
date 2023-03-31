@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 func GetAllCollections(c *fiber.Ctx) error {
@@ -13,6 +14,30 @@ func GetAllCollections(c *fiber.Ctx) error {
 	data := collections.GetMenu(db)
 	c.Append("Access-Control-Allow-Origin", "*")
 	return c.JSON(fiber.Map{"error": nil, "message": "Success", "status": false, "data": data})
+}
+func GetACollection(c *fiber.Ctx) error {
+	db := database.Database
+	collection := new(collections.Collection)
+	c.Append("Access-Control-Allow-Origin", "*")
+	if err := c.BodyParser(&collection); err != nil {
+		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
+	}
+
+	result := collections.GetCollection(db, *collection)
+	return c.JSON(fiber.Map{"error": nil, "data": result, "status": true})
+}
+func FormatCollection(c *fiber.Ctx) error {
+	db := database.Database
+	collection := new(collections.Collection)
+	c.Append("Access-Control-Allow-Origin", "*")
+	if err := c.BodyParser(&collection); err != nil {
+		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
+	}
+	db.Table("collections").Debug().Preload("Requests", func(db *gorm.DB) *gorm.DB {
+		return db.Where("`requests`.`folder_id` IS NULL").Preload("Responses")
+	}).Find(&collection)
+
+	return c.JSON(fiber.Map{"error": nil, "data": collection.Requests, "status": true})
 }
 func CreateNewCollection(c *fiber.Ctx) error {
 	db := database.Database

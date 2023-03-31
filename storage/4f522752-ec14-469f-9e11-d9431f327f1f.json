@@ -1,0 +1,15 @@
+{
+    "DELETE": null,
+    "GET": [
+        {
+            "path": "/api/alo",
+            "method": "GET",
+            "status_code": 200,
+            "collection_id": "4f522752-ec14-469f-9e11-d9431f327f1f",
+            "response_body": "{\"a\":\"a\"}"
+        }
+    ],
+    "PATCH": null,
+    "POST": null,
+    "PUT": null
+}

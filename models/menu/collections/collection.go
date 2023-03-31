@@ -15,7 +15,7 @@ type Collection struct {
 	UserId    uint32             `gorm:"not null;default:1" json:"user_id,omitempty"`
 	Requests  []requests.Request `gorm:"foreignKey:CollectionId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"requests,omitempty"`
 	Folders   []folders.Folder   `gorm:"foreignKey:CollectionId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"folders,omitempty"`
-	IsServer  bool               `gorm:"not null;default:false" json:"-"`
+	IsServer  bool               `gorm:"not null;default:false" json:"is_server"`
 	CreatedAt time.Time          `gorm:"not null" json:"created_at,omitempty"`
 	UpdatedAt time.Time          `gorm:"not null" json:"updated_at,omitempty"`
 }

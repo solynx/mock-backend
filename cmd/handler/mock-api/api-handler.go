@@ -10,9 +10,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func NewMockApi(c *fiber.Ctx) error {
@@ -68,46 +70,85 @@ func RemoveMockApi(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"error": nil, "message": "Delete a api status", "status": false})
 }
 func CheckMock(c *fiber.Ctx) error {
+	id := c.Params("uuid")
 
-	db := database.Database
-	collection := new(collections.Collection)
-	c.Append("Access-Control-Allow-Origin", "*")
-	if err := c.BodyParser(&collection); err != nil {
-		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
+	// Xử lý request ở đây
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		return c.Status(http.StatusNotFound).SendString("Mock response not found")
 	}
 
-	path := c.Path()
+	db := database.Database
+	collection := collections.Collection{ID: uuid}
+	c.Append("Access-Control-Allow-Origin", "*")
+
+	root_path := c.Path()
+	tem_path := strings.Split(root_path, "/")
+	path := "/" + strings.Join(tem_path[2:], "/")
+	fmt.Println(path)
 	method := c.Method()
-	result := collections.CheckMockApi(db, *collection)
+	result := collections.CheckMockApi(db, collection)
 	if result {
-		mockResponses := loadMockResponses(collection.ID.String())
+		mockResponses := loadMockResponses(uuid.String())
 		mockResponse, _ := mockResponses[method]
-		fmt.Println(path)
 
 		for idx := range mockResponse {
 			if mockResponse[idx].Path == path {
+
 				return c.Status(mockResponse[idx].StatusCode).JSON(mockResponse[idx].ResponseBody)
+
 			}
 		}
 
-		return c.Status(http.StatusNotFound).SendString("Mock response not found")
+		return c.Status(http.StatusNotFound).JSON(fiber.Map{"message": "Mock response not found"})
 	}
 	return c.Status(http.StatusNotFound).SendString("Mock response not found")
 
 }
 func CreateOrUpdateApi(c *fiber.Ctx) error {
-
+	c.Accepts("application/json")
+	c.Append("Access-Control-Allow-Origin", "*")
 	data := new(mock_server.MockResponse)
 	if err := c.BodyParser(&data); err != nil {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
+
 	db := database.Database
 	collection := collections.Collection{ID: data.CollectionId}
 	is_server := collections.CheckMockApi(db, collection)
 	if is_server {
 		method := c.Method()
+		if method != data.Method {
+			//fix bug url get  method
+			method = data.Method
+		}
 		path := data.Path
+
+		// Use type assertion to convert data to MockResponse
+
+		var data1 interface{}
+		err := json.Unmarshal([]byte(data.ResponseBody.(string)), &data1)
+		if err != nil {
+			c.SendStatus(404)
+		}
+		switch v := data1.(type) {
+		case map[string]interface{}:
+			data.ResponseBody = data1
+		case []interface{}:
+			data.ResponseBody = data1
+		default:
+			fmt.Println("It is something else:", v)
+		}
+
+		// Unmarshal the string into the slice
+		// err := json.Unmarshal([]byte(data.ResponseBody.(string)), &arr)
+		// if err != nil {
+		// 	var arr map[string]interface{}
+		// 	err := json.Unmarshal([]byte(data.ResponseBody.(string)), &arr)
+		// }
 		responseBody := data.ResponseBody
+
+		// return c.JSON(arr)
 		statusCode := data.StatusCode
 		mockResponses := loadMockResponses(data.CollectionId.String())
 		mockResponse, _ := mockResponses[method]
@@ -124,7 +165,7 @@ func CreateOrUpdateApi(c *fiber.Ctx) error {
 		}
 		if !flag {
 
-			api := mock_server.MockResponse{Path: path, ResponseBody: responseBody, StatusCode: statusCode, CollectionId: data.CollectionId}
+			api := mock_server.MockResponse{Path: path, ResponseBody: responseBody, StatusCode: statusCode, CollectionId: data.CollectionId, Method: data.Method}
 
 			mockResponse = append(mockResponse, api)
 			mockResponses[method] = mockResponse

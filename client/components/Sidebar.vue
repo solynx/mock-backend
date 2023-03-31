@@ -3,7 +3,17 @@
     <nav class="sidebar__group">
       <ul class="sidebar__group__list flex py-5">
         <li class="sidebar__group_list__item sidebar__group_list__item--create">
-          <n-button size="small" tertiary @click="newCollection">
+          <n-button
+            v-if="ModeAddButton"
+            size="small"
+            tertiary
+            @click="newCollection"
+          >
+            <n-icon class="sidebar__group__list--icon text-2xl">
+              <add-icon></add-icon>
+            </n-icon>
+          </n-button>
+          <n-button v-else size="small" tertiary @click="newMockServer">
             <n-icon class="sidebar__group__list--icon text-2xl">
               <add-icon></add-icon>
             </n-icon>
@@ -26,125 +36,89 @@
           </NDropdown>
         </li>
       </ul>
+
       <NScrollbar style="max-height: 85vh">
-        <ul class="sidebar__group__collection">
-          <n-collapse :arrow="false" :accordion="true">
-            <n-collapse-item
-              v-for="(collection, index) in props.collections"
-              :title="`${collection.name}`"
-              :name="collection.id"
-              :key="collection.id"
-            >
-              <template #header>
-                <span @click="Alo()" v-if="editingIndex !== collection.id">
-                  {{ collection.name }}</span
-                >
-
-                <input
-                  v-else
-                  type="text"
-                  v-model="name"
-                  @blur="handleBlur"
-                  @keyup.enter="saveNameCollection(collection, name)"
-                />
-                <n-button
-                  size="tiny"
-                  secondary
-                  type="tertiary"
-                  @click="exportModal"
-                >
-                  <small> Export</small>
-                </n-button>
-                <n-modal
-                  v-model:show="mode"
-                  class="custom-card"
-                  preset="card"
-                  :style="{ width: 600 + 'px' }"
-                  title="Export Collection"
-                  :bordered="false"
-                  size="huge"
-                  :segmented="segmented"
-                >
-                  <div><b>Collection Name</b></div>
-                  <div>will be exported as a JSON file. Export as:</div>
-                  <n-radio-group v-model:value="json_version" name="radiogroup">
-                    <n-space>
-                      <n-radio
-                        key="Collectionv2"
-                        value="Collectionv2"
-                        label="Collection v2"
-                      />
-                      <br />
-                      <n-radio
-                        key="Collectionv2.1"
-                        value="Collectionv2.1"
-                        label="Collection v2.1 (recommended)"
-                      />
-                    </n-space>
-                  </n-radio-group>
-                  <template #footer>
-                    <n-space class="float-right">
-                      <n-button
-                        strong
-                        secondary
-                        type="tertiary"
-                        @click="exportModal"
-                      >
-                        Cancel
-                      </n-button>
-                      <n-button strong class="no-tailwind" color="#ff6c37">
-                        Export
-                      </n-button>
-                    </n-space>
-                  </template>
-                </n-modal>
-              </template>
-
-              <template #header-extra>
-                <n-space>
-                  <n-popover trigger="click">
-                    <template #trigger>
-                      <n-button>
-                        <n-icon> <more-icon></more-icon> </n-icon
-                      ></n-button>
-                    </template>
-                    <template #header>
-                      <n-button @click="addRequest(collection)">
-                        Add Request
-                      </n-button>
-                    </template>
-                    <div>
-                      <n-button @click="newFolder(collection)">
-                        Add Folder
-                      </n-button>
-                    </div>
-                    <n-button @click="toggleEdit1(collection)"> Edit </n-button>
-                    <template #footer>
-                      <n-button @click="deleteCollection(collection, index)">
-                        Delete
-                      </n-button>
-                    </template>
-                  </n-popover>
-                </n-space>
-              </template>
-              <!-- FOLDERS IN COLLECTION-->
-              <n-collapse>
+        <n-tabs
+          default-value="collection"
+          size="small"
+          justify-content="space-evenly"
+          :on-update:value="changeAddButton"
+        >
+          <n-tab-pane name="collection" tab="Collections">
+            <ul class="sidebar__group__collection">
+              <n-collapse :arrow="false" :accordion="true">
                 <n-collapse-item
-                  v-for="(folder, index) in collection.folders"
-                  :title="`${folder.name}`"
-                  :name="folder.name"
+                  v-for="(collection, index) in props.collections"
+                  :title="`${collection.name}`"
+                  :name="collection.id"
+                  :key="collection.id"
                 >
                   <template #header>
-                    <span v-if="editingIndex !== folder.id">
-                      {{ folder.name }}</span
+                    <span v-if="editingIndex !== collection.id">
+                      {{ collection.name }}</span
                     >
+
                     <input
                       v-else
                       type="text"
                       v-model="name"
                       @blur="handleBlur"
-                      @keyup.enter="saveNameFolder(folder, name)"
+                      @keyup.enter="saveNameCollection(collection, name)"
                     />
+                    <n-button
+                      size="tiny"
+                      secondary
+                      type="tertiary"
+                      @click="exportModal"
+                    >
+                      <small> Export</small>
+                    </n-button>
+                    <n-modal
+                      v-model:show="mode"
+                      class="custom-card"
+                      preset="card"
+                      :style="{ width: 600 + 'px' }"
+                      title="Export Collection"
+                      :bordered="false"
+                      size="huge"
+                      :segmented="segmented"
+                    >
+                      <div><b>Collection Name</b></div>
+                      <div>will be exported as a JSON file. Export as:</div>
+                      <n-radio-group
+                        v-model:value="json_version"
+                        name="radiogroup"
+                      >
+                        <n-space>
+                          <n-radio
+                            key="Collectionv2"
+                            value="Collectionv2"
+                            label="Collection v2"
+                          />
+                          <br />
+                          <n-radio
+                            key="Collectionv2.1"
+                            value="Collectionv2.1"
+                            label="Collection v2.1 (recommended)"
+                          />
+                        </n-space>
+                      </n-radio-group>
+                      <template #footer>
+                        <n-space class="float-right">
+                          <n-button
+                            strong
+                            secondary
+                            type="tertiary"
+                            @click="exportModal"
+                          >
+                            Cancel
+                          </n-button>
+                          <n-button strong class="no-tailwind" color="#ff6c37">
+                            Export
+                          </n-button>
+                        </n-space>
+                      </template>
+                    </n-modal>
                   </template>
 
                   <template #header-extra>
@@ -156,14 +130,21 @@
                           ></n-button>
                         </template>
                         <template #header>
-                          <n-button @click="addRequest(collection, folder)">
+                          <n-button @click="addRequest(collection)">
                             Add Request
                           </n-button>
                         </template>
-                        <n-button @click="toggleEdit1(folder)"> Edit </n-button>
+                        <div>
+                          <n-button @click="newFolder(collection)">
+                            Add Folder
+                          </n-button>
+                        </div>
+                        <n-button @click="toggleEdit1(collection)">
+                          Edit
+                        </n-button>
                         <template #footer>
                           <n-button
-                            @click="deleteFolder(collection, folder, index)"
+                            @click="deleteCollection(collection, index)"
                           >
                             Delete
                           </n-button>
@@ -171,36 +152,242 @@
                       </n-popover>
                     </n-space>
                   </template>
+                  <!-- FOLDERS IN COLLECTION-->
                   <n-collapse>
-                    <!-- Request In Folder-->
-                    <n-collapse
-                      v-for="(request, index) in folder.requests"
-                      @click="
-                        getItemSelected(
-                          [
-                            { id: collection.id, name: collection.name },
-                            { id: folder.id, name: folder.name },
-                          ],
-                          request
-                        )
-                      "
+                    <n-collapse-item
+                      v-for="(folder, index) in collection.folders"
+                      :title="`${folder.name}`"
+                      :name="folder.name"
                     >
+                      <template #header>
+                        <span v-if="editingIndex !== folder.id">
+                          {{ folder.name }}</span
+                        >
+                        <input
+                          v-else
+                          type="text"
+                          v-model="name"
+                          @blur="handleBlur"
+                          @keyup.enter="saveNameFolder(folder, name)"
+                        />
+                      </template>
+
+                      <template #header-extra>
+                        <n-space>
+                          <n-popover trigger="click">
+                            <template #trigger>
+                              <n-button>
+                                <n-icon> <more-icon></more-icon> </n-icon
+                              ></n-button>
+                            </template>
+                            <template #header>
+                              <n-button @click="addRequest(collection, folder)">
+                                Add Request
+                              </n-button>
+                            </template>
+                            <n-button @click="toggleEdit1(folder)">
+                              Edit
+                            </n-button>
+                            <template #footer>
+                              <n-button
+                                @click="deleteFolder(collection, folder, index)"
+                              >
+                                Delete
+                              </n-button>
+                            </template>
+                          </n-popover>
+                        </n-space>
+                      </template>
+                      <n-collapse>
+                        <!-- Request In Folder-->
+                        <n-collapse
+                          v-for="(request, index) in folder.requests"
+                          @click="
+                            getItemSelected(
+                              [
+                                { id: collection.id, name: collection.name },
+                                { id: folder.id, name: folder.name },
+                              ],
+                              request
+                            )
+                          "
+                        >
+                          <n-collapse-item
+                            :title="`${request.name}`"
+                            :name="request.id"
+                          >
+                            <template #header>
+                              <span v-if="editingIndex !== request.id">
+                                {{ request.name }}</span
+                              >
+                              <input
+                                v-else
+                                type="text"
+                                v-model="name"
+                                @blur="handleBlur"
+                                @keyup.enter="saveNameRequest(request, name)"
+                              />
+                            </template>
+                            <template #header-extra>
+                              <n-space>
+                                <n-popover trigger="click">
+                                  <template #trigger>
+                                    <n-button>
+                                      <n-icon> <more-icon></more-icon> </n-icon
+                                    ></n-button>
+                                  </template>
+                                  <template #header>
+                                    <n-button @click="addResponse(request)">
+                                      Add Response
+                                    </n-button>
+                                  </template>
+                                  <n-button @click="toggleEdit1(request)">
+                                    Edit
+                                  </n-button>
+                                  <template #footer>
+                                    <n-button
+                                      @click="
+                                        deleteRequest(folder, request, index)
+                                      "
+                                    >
+                                      Delete
+                                    </n-button>
+                                  </template>
+                                </n-popover>
+                              </n-space>
+                            </template>
+                            <!-- RESPONSE IN REQUEST OF folders-->
+
+                            <n-collapse-item
+                              v-for="(res, index) in request.responses"
+                              :title="`${res.name}`"
+                              :name="res.id"
+                            >
+                              <template #header>
+                                <span v-if="editingIndex !== res.id">
+                                  {{ res.name }}</span
+                                >
+                                <input
+                                  v-else
+                                  type="text"
+                                  v-model="name"
+                                  @blur="handleBlur"
+                                  @keyup.enter="editResponse(res, name)"
+                                />
+                              </template>
+
+                              <template #header-extra>
+                                <n-space>
+                                  <n-popover trigger="click">
+                                    <template #trigger>
+                                      <n-button>
+                                        <n-icon>
+                                          <more-icon></more-icon> </n-icon
+                                      ></n-button>
+                                    </template>
+                                    <template #header>
+                                      <n-button @click="toggleEdit1(res)">
+                                        Edit
+                                      </n-button>
+                                    </template>
+                                    <template #footer>
+                                      <n-button
+                                        @click="
+                                          deleteResponse(request, res, index)
+                                        "
+                                      >
+                                        Delete
+                                      </n-button>
+                                    </template>
+                                  </n-popover>
+                                </n-space>
+                              </template>
+                            </n-collapse-item>
+                          </n-collapse-item>
+                        </n-collapse>
+                      </n-collapse>
+                    </n-collapse-item>
+                  </n-collapse>
+                  <!-- REQUEST IN COLLECTION-->
+                  <n-collapse>
+                    <n-collapse-item
+                      v-for="(request, index) in collection.requests"
+                      :title="`${request.name}`"
+                      :name="request.id"
+                    >
+                      <template #header>
+                        <span
+                          v-if="editingIndex !== request.id"
+                          @click="
+                            getItemSelected(
+                              [{ id: collection.id, name: collection.name }],
+                              request
+                            )
+                          "
+                        >
+                          {{ request.name }}</span
+                        >
+                        <input
+                          v-else
+                          type="text"
+                          v-model="name"
+                          @blur="handleBlur"
+                          @keyup.enter="saveNameRequest(request, name)"
+                        />
+                      </template>
+
+                      <template #header-extra>
+                        <n-space>
+                          <n-popover trigger="click">
+                            <template #trigger>
+                              <n-button>
+                                <n-icon> <more-icon></more-icon> </n-icon
+                              ></n-button>
+                            </template>
+                            <template #header>
+                              <n-button @click="addResponse(request)">
+                                Add Response
+                              </n-button>
+                            </template>
+
+                            <n-button @click="toggleEdit1(request)">
+                              Edit
+                            </n-button>
+                            <template #footer>
+                              <n-button
+                                @click="
+                                  deleteRequest(collection, request, index)
+                                "
+                              >
+                                Delete
+                              </n-button>
+                            </template>
+                          </n-popover>
+                        </n-space>
+                      </template>
+                      <!-- RESPONSE IN REQUEST OF COLLECTIONs-->
+
                       <n-collapse-item
-                        :title="`${request.name}`"
-                        :name="request.id"
+                        v-for="(res, index) in request.responses"
+                        :title="`${res.name}`"
+                        :name="res.id"
+                        @click="getResponseSelected(collection, request, res)"
                       >
                         <template #header>
-                          <span v-if="editingIndex !== request.id">
-                            {{ request.name }}</span
+                          <span v-if="editingIndex !== res.id">
+                            {{ res.name }}</span
                           >
                           <input
                             v-else
                             type="text"
                             v-model="name"
                             @blur="handleBlur"
-                            @keyup.enter="saveNameRequest(request, name)"
+                            @keyup.enter="
+                              saveName(request, res, name, 'RESPONSE')
+                            "
                           />
                         </template>
+
                         <template #header-extra>
                           <n-space>
                             <n-popover trigger="click">
@@ -210,16 +397,13 @@
                                 ></n-button>
                               </template>
                               <template #header>
-                                <n-button @click="addResponse(request)">
-                                  Add Response
+                                <n-button @click="toggleEdit1(res)">
+                                  Edit
                                 </n-button>
                               </template>
-                              <n-button @click="toggleEdit1(request)">
-                                Edit
-                              </n-button>
                               <template #footer>
                                 <n-button
-                                  @click="deleteRequest(folder, request, index)"
+                                  @click="deleteResponse(request, res, index)"
                                 >
                                   Delete
                                 </n-button>
@@ -227,151 +411,28 @@
                             </n-popover>
                           </n-space>
                         </template>
-                        <!-- RESPONSE IN REQUEST OF folders-->
-
-                        <n-collapse-item
-                          v-for="(res, index) in request.responses"
-                          :title="`${res.name}`"
-                          :name="res.id"
-                        >
-                          <template #header>
-                            <span v-if="editingIndex !== res.id">
-                              {{ res.name }}</span
-                            >
-                            <input
-                              v-else
-                              type="text"
-                              v-model="name"
-                              @blur="handleBlur"
-                              @keyup.enter="editResponse(res, name)"
-                            />
-                          </template>
-
-                          <template #header-extra>
-                            <n-space>
-                              <n-popover trigger="click">
-                                <template #trigger>
-                                  <n-button>
-                                    <n-icon> <more-icon></more-icon> </n-icon
-                                  ></n-button>
-                                </template>
-                                <template #header>
-                                  <n-button @click="toggleEdit1(res)">
-                                    Edit
-                                  </n-button>
-                                </template>
-                                <template #footer>
-                                  <n-button
-                                    @click="deleteResponse(request, res, index)"
-                                  >
-                                    Delete
-                                  </n-button>
-                                </template>
-                              </n-popover>
-                            </n-space>
-                          </template>
-                        </n-collapse-item>
                       </n-collapse-item>
-                    </n-collapse>
+                    </n-collapse-item>
                   </n-collapse>
                 </n-collapse-item>
               </n-collapse>
-              <!-- REQUEST IN COLLECTION-->
-              <n-collapse>
-                <n-collapse-item
-                  v-for="(request, index) in collection.requests"
-                  :title="`${request.name}`"
-                  :name="request.id"
-                >
-                  <template #header>
-                    <span v-if="editingIndex !== request.id">
-                      {{ request.name }}</span
-                    >
-                    <input
-                      v-else
-                      type="text"
-                      v-model="name"
-                      @blur="handleBlur"
-                      @keyup.enter="saveNameRequest(request, name)"
-                    />
-                  </template>
-
-                  <template #header-extra>
-                    <n-space>
-                      <n-popover trigger="click">
-                        <template #trigger>
-                          <n-button>
-                            <n-icon> <more-icon></more-icon> </n-icon
-                          ></n-button>
-                        </template>
-                        <template #header>
-                          <n-button @click="addResponse(request)">
-                            Add Response
-                          </n-button>
-                        </template>
-
-                        <n-button @click="toggleEdit1(request)">
-                          Edit
-                        </n-button>
-                        <template #footer>
-                          <n-button
-                            @click="deleteRequest(collection, request, index)"
-                          >
-                            Delete
-                          </n-button>
-                        </template>
-                      </n-popover>
-                    </n-space>
-                  </template>
-                  <!-- RESPONSE IN REQUEST OF COLLECTIONs-->
-
-                  <n-collapse-item
-                    v-for="(res, index) in request.responses"
-                    :title="`${res.name}`"
-                    :name="res.id"
-                  >
-                    <template #header>
-                      <span v-if="editingIndex !== res.id">
-                        {{ res.name }}</span
-                      >
-                      <input
-                        v-else
-                        type="text"
-                        v-model="name"
-                        @blur="handleBlur"
-                        @keyup.enter="saveName(request, res, name, 'RESPONSE')"
-                      />
-                    </template>
-
-                    <template #header-extra>
-                      <n-space>
-                        <n-popover trigger="click">
-                          <template #trigger>
-                            <n-button>
-                              <n-icon> <more-icon></more-icon> </n-icon
-                            ></n-button>
-                          </template>
-                          <template #header>
-                            <n-button @click="toggleEdit1(res)">
-                              Edit
-                            </n-button>
-                          </template>
-                          <template #footer>
-                            <n-button
-                              @click="deleteResponse(request, res, index)"
-                            >
-                              Delete
-                            </n-button>
-                          </template>
-                        </n-popover>
-                      </n-space>
-                    </template>
-                  </n-collapse-item>
-                </n-collapse-item>
-              </n-collapse>
-            </n-collapse-item>
-          </n-collapse>
-        </ul>
+            </ul>
+          </n-tab-pane>
+          <n-tab-pane name="mock" tab="Mock Servers">
+            <template #tab>
+              <n-icon size="14"> <server></server> </n-icon>
+              <p>Mock Servers</p>
+            </template>
+            <n-collapse>
+              <n-collapse-item
+                v-for="server in props.servers"
+                :title="server.name"
+                name="server.name"
+              >
+              </n-collapse-item>
+            </n-collapse>
+          </n-tab-pane>
+        </n-tabs>
       </NScrollbar>
     </nav>
   </div>
@@ -394,17 +455,29 @@ import {
   NModal,
   NRadioGroup,
   NRadio,
+  NTabs,
+  NTabPane,
 } from "naive-ui";
 import {
   AddOutline as AddIcon,
   FilterOutline as FilterIcon,
   EllipsisHorizontalOutline as MoreIcon,
+  ServerOutline as Server,
 } from "@vicons/ionicons5";
 import { v4 as uuidv4 } from "uuid";
 const props = defineProps({
   collections: Array,
+  servers: Array,
 });
-const emit = defineEmits(["item-selected"]);
+const ModeAddButton = ref(true);
+const item_selected = useState("item_select", () => "");
+const response_actived = useState("response_actived", () => "");
+const belong_collection = useState("belong_collection", () => "");
+const belong_request = useState("belong_request", () => "");
+const changeAddButton = () => {
+  ModeAddButton.value = !ModeAddButton.value;
+};
+const emit = defineEmits(["item-selected", "toggle-layout"]);
 const message = useMessage();
 const treeOptions = [
   {
@@ -680,7 +753,7 @@ const saveNameRequest = async (request: object, new_name: string) => {
     }
   );
   const status1 = JSON.parse(JSON.stringify(status.value));
-  console.log(status1);
+
   if (status1.status) {
     request.name = new_name;
     editingIndex.value = -1;
@@ -721,6 +794,7 @@ const addResponse = async (request: object) => {
     request_id: request.id,
     file_link: null,
   };
+
   const { data: status } = await useFetch(
     "http://127.0.0.1:8000/admin/response.json",
     {
@@ -779,14 +853,32 @@ const editResponse = async (response: object, new_name: string) => {
 };
 // content action
 const getItemSelected = (bread_cum: Array, item: object) => {
+  item_selected.value = "request";
+
+  emit("item-selected", bread_cum, item);
+};
+const getResponseSelected = (
+  collection: object,
+  request: object,
+  item: object
+) => {
+  const bread_cum = [collection, request];
+
+  item_selected.value = "response";
+  response_actived.value = item;
+  belong_collection.value = collection;
+  belong_request.value = request;
   emit("item-selected", bread_cum, item);
 };
 const Alo = () => {
-  console.log("Da");
+  emit("toggle-layout");
 };
 
 const exportModal = () => {
   mode.value = !mode.value;
+};
+const newMockServer = () => {
+  emit("toggle-layout");
 };
 </script>
 <style scoped>

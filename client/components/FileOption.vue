@@ -3,11 +3,11 @@
     <n-config-provider>
       <n-space>
         <n-button-group>
-          <n-button tertiary>
+          <n-button tertiary :class="{ saving: response_saving }">
             <n-icon size="24">
               <save-icon />
             </n-icon>
-            <b> Save</b>
+            <b> {{ response_saving ? "Saving..." : "Save" }}</b>
           </n-button>
           <n-button tertiary>
             <n-icon>
@@ -35,7 +35,7 @@
     </n-config-provider>
   </div>
 </template>
-<script setup>
+<script lang="ts" setup>
 import {
   NButton,
   NSpace,
@@ -51,6 +51,7 @@ import {
   PencilOutline as PencilIcon,
   ChatboxEllipsesOutline as MomentModeIcon,
 } from "@vicons/ionicons5";
+const response_saving = useState("response_saving");
 </script>
 <style scoped>
 .pencil-icon-background {
@@ -58,5 +59,8 @@ import {
 }
 .fixed-background-moment-icon {
   background-color: rgb(212 212 212);
+}
+.saving {
+  opacity: 0.5;
 }
 </style>

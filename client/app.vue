@@ -1,5 +1,11 @@
 <template>
-  <NuxtLayout name="sidebar"></NuxtLayout>
+  <NMessageProvider>
+    <NDialogProvider>
+      <NuxtLayout name="sidebar"></NuxtLayout>
+    </NDialogProvider>
+  </NMessageProvider>
 </template>
 
-<script setup></script>
+<script lang="ts" setup>
+import { NMessageProvider, NDialogProvider } from "naive-ui";
+</script>

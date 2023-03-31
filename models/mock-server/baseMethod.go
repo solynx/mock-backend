@@ -3,8 +3,10 @@ package mock_server
 import "github.com/google/uuid"
 
 type MockResponse struct {
-	Path         string      `json:"path"`
-	StatusCode   int         `json:"status_code"`
+	Path       string `json:"path"`
+	Method     string `json:"method"`
+	StatusCode int    `json:"status_code"`
+
 	CollectionId uuid.UUID   `json:"collection_id"`
 	ResponseBody interface{} `json:"response_body"`
 }

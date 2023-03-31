@@ -1,6 +1,5 @@
 <template>
   <NSpace vertical>
-    <input v-model="ac" />
     <NInputGroup>
       <NSelect
         :options="selectOptions"
@@ -8,7 +7,7 @@
         class="w-2/12"
       />
       <NInput
-        :style="{ width: '70%' }"
+        :style="{ width: '100%' }"
         class="bg-neutral-200"
         v-model:value="props.uri.uri_component"
         @keyup.enter="getRequest"
@@ -19,6 +18,7 @@
         type="info"
         class="no-tailwind"
         @click="getRequest"
+        v-if="item_selected === 'request'"
       >
         Send
       </NButton>
@@ -35,7 +35,7 @@ const props = defineProps({
 const { $myPlugin } = useNuxtApp();
 const abc = computed(() => props.uri.uri_component + $myPlugin.showUri());
 const ac = useState("fake", $myPlugin.showUri());
-
+const item_selected = useState("item_select");
 const emit = defineEmits(["change_link"]);
 const Method = ref("GET");
 

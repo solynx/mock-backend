@@ -1,5 +1,4 @@
 <template>
-  {{ code_res.value }}
   <n-scrollbar style="max-height: 320px">
     <div class="json-result w-full">
       <div style="overflow: auto" class="px-12">

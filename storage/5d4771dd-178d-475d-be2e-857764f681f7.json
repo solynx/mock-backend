@@ -1,0 +1,28 @@
+{
+    "DELETE": null,
+    "GET": [
+        {
+            "path": "/ad/a1l",
+            "method": "GET",
+            "status_code": 200,
+            "collection_id": "5d4771dd-178d-475d-be2e-857764f681f7",
+            "response_body": {
+                "age": 21,
+                "name": "Kingdo22m2"
+            }
+        },
+        {
+            "path": "/api/ali",
+            "method": "GET",
+            "status_code": 200,
+            "collection_id": "5d4771dd-178d-475d-be2e-857764f681f7",
+            "response_body": {
+                "age": 21,
+                "name": "Kingdo22m2"
+            }
+        }
+    ],
+    "PATCH": null,
+    "POST": null,
+    "PUT": null
+}
