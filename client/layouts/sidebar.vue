@@ -8,15 +8,21 @@
             @item-selected="getItemSelected"
             @toggle-layout="toggleLayout"
             :servers="filterServer"
+            class="w-1/5"
           ></Sidebar>
           <Content
-            v-if="modeCollection"
+            v-if="element_selected !== 'show_create_mock'"
             :item="item_select"
             :item_link="item_link"
             :uri_params="uri_param"
+            class="w-4/5"
           >
           </Content>
-          <MockServer v-else @createServer="createMockServer"></MockServer>
+          <MockServer
+            v-if="element_selected === 'show_create_mock'"
+            @createServer="createMockServer"
+            class="w-4/5"
+          ></MockServer>
         </div>
       </NDialogProvider>
     </NLoadingBarProvider>
@@ -39,7 +45,8 @@ const { data: sidebarList } = await useFetch(
   "http://127.0.0.1:8000/admin/collection.json",
   {}
 );
-
+const element_selected = useState("toggle_mock_collection");
+const code_res = useState("code_response");
 const collections = ref(JSON.parse(JSON.stringify(sidebarList.value)));
 console.log(collections.value.data);
 const filterServer1 = collections.value.data.filter(
@@ -65,6 +72,8 @@ const item_select = ref({});
 const item_link = ref<object[]>([]);
 const uri_param = ref("");
 const getItemSelected = (bread_cum: Array, item: object) => {
+  element_selected.value = "request";
+  code_res.value = "";
   item_link.value = bread_cum;
 
   item_link.value.push({ id: item.id, name: item.name });
@@ -79,6 +88,8 @@ const toggleLayout = () => {
 };
 const createMockServer = async (newapi: object, collection_name: string) => {
   const uuid = uuidv4();
+  const uuid_req = uuidv4();
+  const uuid_res = uuidv4();
   const collection = {
     name: collection_name,
     id: uuid,
@@ -86,6 +97,23 @@ const createMockServer = async (newapi: object, collection_name: string) => {
     folders: [],
 
     is_server: true,
+  };
+  const request = {
+    id: uuid_req,
+    name: newapi.url,
+    collection_id: collection.id,
+    method: newapi.method,
+    uri_component: "",
+    responses: [],
+  };
+
+  const response = {
+    id: uuid_res,
+    name: request.name,
+    request_id: request.id,
+    method: request.method,
+    uri_component: "",
+    body: newapi.response_body,
   };
 
   const { data: status } = await useFetch(
@@ -100,7 +128,6 @@ const createMockServer = async (newapi: object, collection_name: string) => {
   const status1 = JSON.parse(JSON.stringify(status.value));
 
   if (status1.status) {
-    collections.value.data.push(collection);
     const api = {
       collection_id: collection.id,
       path: newapi.url,
@@ -110,9 +137,38 @@ const createMockServer = async (newapi: object, collection_name: string) => {
     };
     if (await createMockApi(api)) {
       filterServer.value.push(collection);
-      const url = "localhost:8000/" + collection.id;
+      const url = "http://localhost:8000/" + collection.id;
+      request.uri_component = url + request.name;
+      response.uri_component = request.uri_component;
+      const { data: status } = await useFetch(
+        "http://localhost:8000/admin/request.json",
+        {
+          method: "POST",
 
-      return handleSuccess(url);
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify(request),
+        }
+      );
+
+      const result = JSON.parse(JSON.stringify(status.value));
+      if (result.status) {
+        const { data: status1 } = await useFetch(
+          "http://localhost:8000/admin/response.json",
+          {
+            method: "POST",
+
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify(response),
+          }
+        );
+        const result = JSON.parse(JSON.stringify(status1.value));
+        if (result.status) {
+          request.responses.push(response);
+          collection.requests.push(request);
+          collections.value.data.push(collection);
+          return handleSuccess(url);
+        }
+      }
     }
     return message.error("Failed!");
   }

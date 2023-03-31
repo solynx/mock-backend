@@ -28,4 +28,5 @@ func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&folders.Folder{})
 	db.AutoMigrate(&requests.Request{})
 	db.AutoMigrate(&responses.Response{})
+	db.AutoMigrate(&responses.ResponseFormat{})
 }

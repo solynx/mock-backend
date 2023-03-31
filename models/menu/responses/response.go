@@ -18,3 +18,15 @@ type Response struct {
 	CreatedAt time.Time `gorm:"not null" json:"created_at,omitempty"`
 	UpdatedAt time.Time `gorm:"not null" json:"updated_at,omitempty"`
 }
+type ResponseFormat struct {
+	ID              uuid.UUID `gorm:"type:char(36);primary_key;unique;not null" json:"id,omitempty"`
+	Name            string    `gorm:"type:varchar(100);not null" json:"name, omitempty"`
+	OriginalRequest string    `gorm:"type:json;not null" json:"originalRequest, omitempty"`
+	Body            string    `gorm:"type:text;default:null" json:"body, omitempty"`
+	PreviewLanguage string    `gorm:"type:varchar(255);default:null" json:"_postman_previewlanguage, omitempty"`
+	Header          string    `gorm:"type:varchar(255);default:null" json:"header,omitempty"`
+	RequestId       string    `gorm:"type:char(36);not null" json:"request_id,omitempty"`
+
+	CreatedAt time.Time `gorm:"not null" json:"created_at,omitempty"`
+	UpdatedAt time.Time `gorm:"not null" json:"updated_at,omitempty"`
+}

@@ -1,10 +1,13 @@
 <template>
-  <div class="sidebar w-72 h-screen bg-neutral-300">
+  <div class="sidebar h-screen bg-neutral-300">
     <nav class="sidebar__group">
       <ul class="sidebar__group__list flex py-5">
         <li class="sidebar__group_list__item sidebar__group_list__item--create">
           <n-button
-            v-if="ModeAddButton"
+            v-if="
+              toggle_mock_collection !== 'mock_server' &&
+              toggle_mock_collection !== 'show_create_mock'
+            "
             size="small"
             tertiary
             @click="newCollection"
@@ -13,7 +16,12 @@
               <add-icon></add-icon>
             </n-icon>
           </n-button>
-          <n-button v-else size="small" tertiary @click="newMockServer">
+          <n-button
+            v-else
+            size="small"
+            tertiary
+            @click="toggleMock('show_create_mock')"
+          >
             <n-icon class="sidebar__group__list--icon text-2xl">
               <add-icon></add-icon>
             </n-icon>
@@ -42,9 +50,11 @@
           default-value="collection"
           size="small"
           justify-content="space-evenly"
-          :on-update:value="changeAddButton"
         >
-          <n-tab-pane name="collection" tab="Collections">
+          <n-tab-pane name="collection">
+            <template #tab>
+              <p @click="toggleMock('collection')">Collections</p>
+            </template>
             <ul class="sidebar__group__collection">
               <n-collapse :arrow="false" :accordion="true">
                 <n-collapse-item
@@ -421,7 +431,7 @@
           <n-tab-pane name="mock" tab="Mock Servers">
             <template #tab>
               <n-icon size="14"> <server></server> </n-icon>
-              <p>Mock Servers</p>
+              <p @click="toggleMock('mock_server')">Mock Servers</p>
             </template>
             <n-collapse>
               <n-collapse-item
@@ -513,7 +523,10 @@ const inputInstRef = ref<InputInst | null>(null);
 //Create New Collection
 // const collections12 = ref(collections);
 const mode = ref(false);
-
+const toggle_mock_collection = useState(
+  "toggle_mock_collection",
+  () => "collection"
+);
 const newCollection = async () => {
   const uuid = uuidv4();
   const collection = {
@@ -871,7 +884,7 @@ const getResponseSelected = (
   emit("item-selected", bread_cum, item);
 };
 const Alo = () => {
-  emit("toggle-layout");
+  console.log("alo");
 };
 
 const exportModal = () => {
@@ -879,6 +892,9 @@ const exportModal = () => {
 };
 const newMockServer = () => {
   emit("toggle-layout");
+};
+const toggleMock = (element: string) => {
+  toggle_mock_collection.value = element;
 };
 </script>
 <style scoped>

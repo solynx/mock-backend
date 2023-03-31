@@ -3,10 +3,12 @@ package collection_handler
 import (
 	"app/database"
 	"app/models/menu/collections"
+	"app/models/menu/responses"
+	"encoding/base64"
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 )
 
 func GetAllCollections(c *fiber.Ctx) error {
@@ -28,16 +30,19 @@ func GetACollection(c *fiber.Ctx) error {
 }
 func FormatCollection(c *fiber.Ctx) error {
 	db := database.Database
-	collection := new(collections.Collection)
+	collection := new(responses.ResponseFormat)
+
 	c.Append("Access-Control-Allow-Origin", "*")
 	if err := c.BodyParser(&collection); err != nil {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
-	db.Table("collections").Debug().Preload("Requests", func(db *gorm.DB) *gorm.DB {
-		return db.Where("`requests`.`folder_id` IS NULL").Preload("Responses")
-	}).Find(&collection)
+	db.Table("response_formats").Debug().Find(&collection)
+	sDec, _ := base64.StdEncoding.DecodeString(collection.OriginalRequest)
 
-	return c.JSON(fiber.Map{"error": nil, "data": collection.Requests, "status": true})
+	fmt.Println(string(sDec))
+	// Giải mã mảng byte thành map[string][]responses.Response
+
+	return c.JSON(fiber.Map{"error": nil, "data": collection, "status": true})
 }
 func CreateNewCollection(c *fiber.Ctx) error {
 	db := database.Database

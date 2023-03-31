@@ -2,34 +2,36 @@
   <n-card>
     <div class="w-full">
       <!-- Phần tag multiple bao gồm có nhiều file được mở cùng lúc tại  thanh này-->
-      <div class="file-multiple">
-        <n-dynamic-tags v-model:value="tags" />
-      </div>
-      <n-card>
-        <div class="file-detail flex justify-between">
-          <div class="file-link">
-            <FileLink :link="item_link"></FileLink>
-          </div>
-          <FileOption></FileOption>
+      <div class="w-no-x">
+        <div class="file-multiple">
+          <n-dynamic-tags v-model:value="tags" />
         </div>
-      </n-card>
+        <n-card>
+          <div class="file-detail flex justify-between">
+            <div class="file-link">
+              <FileLink :link="item_link"></FileLink>
+            </div>
+            <FileOption></FileOption>
+          </div>
+        </n-card>
 
-      <URIComponent
-        :uri="item"
-        @change_link="getRequest"
-        :filter_param="filteredQueryParam.value"
-      ></URIComponent>
+        <URIComponent
+          :uri="item"
+          @change_link="getRequest"
+          :filter_param="filteredQueryParam.value"
+        ></URIComponent>
+      </div>
 
-      <div class="group-func flex">
-        <n-card style="width: 60%; min-width: 50%">
-          <div class="group-fun-query">
+      <div class="group-func flex pt-4">
+        <n-card style="width: 50%; min-width: 40%">
+          <div class="group-fun-query mt-3">
             <div class="request-option">
               <QueryDataType></QueryDataType>
             </div>
           </div>
         </n-card>
 
-        <n-config-provider style="width: 40%; max-width: 50%" :hljs="hljs">
+        <n-config-provider style="width: 50%; max-width: 50%" :hljs="hljs">
           <n-loading-bar-provider>
             <NSpin :show="!disabledRef" size="small">
               <ResponseData v-if="item_selected === 'request'"></ResponseData>

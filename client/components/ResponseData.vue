@@ -1,5 +1,5 @@
 <template>
-  <n-scrollbar style="max-height: 320px">
+  <n-scrollbar style="max-height: 400px">
     <div class="json-result w-full">
       <div style="overflow: auto" class="px-12">
         <n-code :code="code_res" language="json" show-line-numbers />

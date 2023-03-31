@@ -1,0 +1,20 @@
+{
+    "DELETE": null,
+    "GET": [
+        {
+            "path": "/api/dragon",
+            "method": "GET",
+            "status_code": 200,
+            "collection_id": "dc14ebe5-fa4d-4c9c-a26e-fb0e46945ab3",
+            "response_body": {
+                "completed": false,
+                "id": 1,
+                "title": "delectus aut autem",
+                "userId": 1
+            }
+        }
+    ],
+    "PATCH": null,
+    "POST": null,
+    "PUT": null
+}

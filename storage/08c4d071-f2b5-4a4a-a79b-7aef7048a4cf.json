@@ -1,0 +1,20 @@
+{
+    "DELETE": null,
+    "GET": [
+        {
+            "path": "/api/admin",
+            "method": "GET",
+            "status_code": 200,
+            "collection_id": "08c4d071-f2b5-4a4a-a79b-7aef7048a4cf",
+            "response_body": {
+                "completed": false,
+                "id": 1,
+                "title": "delectus aut autem",
+                "userId": 1
+            }
+        }
+    ],
+    "PATCH": null,
+    "POST": null,
+    "PUT": null
+}
