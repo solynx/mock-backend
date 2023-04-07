@@ -2,10 +2,14 @@ package collection_handler
 
 import (
 	"app/database"
+	export_format "app/models/export"
 	"app/models/menu/collections"
-	"app/models/menu/responses"
-	"encoding/base64"
-	"fmt"
+	"encoding/json"
+	"io/ioutil"
+	"math/rand"
+	"net/url"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -30,19 +34,169 @@ func GetACollection(c *fiber.Ctx) error {
 }
 func FormatCollection(c *fiber.Ctx) error {
 	db := database.Database
-	collection := new(responses.ResponseFormat)
-
+	collection := new(collections.Collection)
+	// res := new(export_format.Response)
 	c.Append("Access-Control-Allow-Origin", "*")
 	if err := c.BodyParser(&collection); err != nil {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
-	db.Table("response_formats").Debug().Find(&collection)
-	sDec, _ := base64.StdEncoding.DecodeString(collection.OriginalRequest)
+	result := collections.GetCollection(db, *collection)
+	res_result := export_format.Response{}
+	raw_op_req := export_format.RawLang{Language: "json"}
+	option_req := export_format.OptionsOfRequest{Raw: raw_op_req}
 
-	fmt.Println(string(sDec))
+	collection_result := export_format.Collection1{Info: export_format.Info{Id: result.ID.String(), Name: result.Name, Schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json", ExportId: int32(rand.Intn(99999999))}}
+
+	for _, folder := range result.Folders {
+
+		child_folder := export_format.Folder{Name: folder.Name}
+		for _, req := range folder.Requests {
+
+			if req.Method != "GET" {
+				request_child := export_format.Request{}
+				request_child.Name = req.Name
+				request_child.Method = req.Method
+				request_child.Header = nil
+				request_child.BodyOfRequest.Mode = ""
+				request_child.BodyOfRequest.Raw = req.UriComponent
+				request_child.BodyOfRequest.Options = option_req
+				for _, r := range req.Responses {
+					url_res := export_format.Url{}
+					originalReq := export_format.OriginalRequest{}
+
+					u, err := url.Parse(r.UriComponent)
+					if err != nil {
+						panic(err)
+					}
+					//url
+					url_res.Raw = r.UriComponent
+					url_res.Host = strings.Split(u.Hostname(), ".")
+					url_res.Path = strings.Split(u.Path, "/")
+					url_res.Port = u.Port()
+					//originalreq
+					originalReq.Header = ""
+					originalReq.Method = r.Method
+
+					originalReq.Url = url_res
+					//response
+					res_result.Body = r.Body
+					res_result.Cookie = nil
+					res_result.Header = nil
+					res_result.Name = r.Name
+					res_result.PreviewLanguage = "json"
+					res_result.OriginalRequest = originalReq
+					request_child.Response = append(request_child.Response, res_result)
+				}
+				child_folder.Item = append(child_folder.Item, request_child)
+			} else {
+				url_req, _ := url.Parse(req.UriComponent)
+				request_child := export_format.RequestOfCollection{}
+
+				request_child.Name = req.Name
+				request_child.Request.Method = req.Method
+				request_child.Request.Header = nil
+
+				request_child.Request.Url.Raw = req.UriComponent
+				request_child.Request.Url.Host = strings.Split(url_req.Hostname(), ".")
+				request_child.Request.Url.Port = url_req.Port()
+				request_child.Request.Url.Protocol = "http"
+				request_child.Request.Url.Path = strings.Split(url_req.Path, "/")
+				for _, r := range req.Responses {
+					url_res := export_format.Url{}
+					originalReq := export_format.OriginalRequest{}
+
+					u, err := url.Parse(r.UriComponent)
+					if err != nil {
+						panic(err)
+					}
+					//url
+					url_res.Raw = r.UriComponent
+					url_res.Host = strings.Split(u.Hostname(), ".")
+					url_res.Path = strings.Split(u.Path, "/")
+					url_res.Port = u.Port()
+					//originalreq
+					originalReq.Header = ""
+					originalReq.Method = r.Method
+
+					originalReq.Url = url_res
+
+					//response
+					res_result.Body = r.Body
+					res_result.Cookie = nil
+					res_result.Header = nil
+					res_result.Name = r.Name
+					res_result.PreviewLanguage = "json"
+					res_result.OriginalRequest = originalReq
+
+					request_child.Response = append(request_child.Response, res_result)
+				}
+				child_folder.Item = append(child_folder.Item, request_child)
+			}
+
+		}
+		collection_result.Item = append(collection_result.Item, child_folder)
+	}
+
+	for _, req := range result.Requests {
+		url_req, _ := url.Parse(req.UriComponent)
+		request_child := export_format.RequestOfCollection{}
+
+		request_child.Name = req.Name
+		request_child.Request.Method = req.Method
+		request_child.Request.Header = nil
+
+		request_child.Request.Url.Raw = req.UriComponent
+		request_child.Request.Url.Host = strings.Split(url_req.Hostname(), ".")
+		request_child.Request.Url.Port = url_req.Port()
+		request_child.Request.Url.Protocol = "http"
+		request_child.Request.Url.Path = strings.Split(url_req.Path, "/")
+		for _, r := range req.Responses {
+			url_res := export_format.Url{}
+			originalReq := export_format.OriginalRequest{}
+
+			u, err := url.Parse(r.UriComponent)
+			if err != nil {
+				panic(err)
+			}
+			//url
+			url_res.Raw = r.UriComponent
+			url_res.Host = strings.Split(u.Hostname(), ".")
+			url_res.Path = strings.Split(u.Path, "/")
+			url_res.Port = u.Port()
+			//originalreq
+			originalReq.Header = ""
+			originalReq.Method = r.Method
+
+			originalReq.Url = url_res
+
+			//response
+			res_result.Body = r.Body
+			res_result.Cookie = nil
+			res_result.Header = nil
+			res_result.Name = r.Name
+			res_result.PreviewLanguage = "json"
+			res_result.OriginalRequest = originalReq
+
+			request_child.Response = append(request_child.Response, res_result)
+		}
+		collection_result.Item = append(collection_result.Item, request_child)
+	}
 	// Giải mã mảng byte thành map[string][]responses.Response
 
-	return c.JSON(fiber.Map{"error": nil, "data": collection, "status": true})
+	_, err := os.Stat("./storage/export")
+
+	if os.IsNotExist(err) {
+		errDir := os.MkdirAll("./storage/export", 0755)
+		if errDir != nil {
+			return c.SendStatus(500)
+		}
+
+	}
+	file, _ := json.MarshalIndent(collection_result, "", " ")
+	file_path := "./storage/export/" + collection.ID.String() + ".json"
+	_ = ioutil.WriteFile(file_path, file, 0644)
+
+	return c.Download(file_path)
 }
 func CreateNewCollection(c *fiber.Ctx) error {
 	db := database.Database

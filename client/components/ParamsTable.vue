@@ -20,7 +20,7 @@ import {
 } from "naive-ui";
 import { useUriQP } from "~~/composables/useUriQP";
 type RowData = {
-  key: string;
+  key: number;
   param: string;
   value: string;
   description: string;
@@ -28,7 +28,7 @@ type RowData = {
 // const data = useState("data", () => createData());
 // const same_data = useState("data");
 const data = useUriQP();
-
+const query = useState("query_active");
 const emit = defineEmits(["binding_param", "active_query"]);
 const createColumns = (): DataTableColumns<RowData> => [
   {
@@ -43,7 +43,6 @@ const createColumns = (): DataTableColumns<RowData> => [
         value: row.param,
         onUpdateValue(v) {
           data.value[index].param = v;
-          const test = useQueryTest();
         },
 
         placeholder: "Key",
@@ -58,6 +57,15 @@ const createColumns = (): DataTableColumns<RowData> => [
         value: row.value,
         onUpdateValue(v) {
           data.value[index].value = v;
+          if (data.value.length === row.key && data.value.length < 5) {
+            const newRow: RowData = {
+              key: data.value.length + 1,
+              param: "",
+              value: "",
+              description: "",
+            };
+            data.value.push(newRow);
+          }
           emit("binding_param", data.value);
         },
 
@@ -83,7 +91,12 @@ const columns = createColumns();
 const checkedRowKeysRef = ref<Array<string | number>>([]);
 const handleCheck = (rowKeys: DataTableRowKey[]) => {
   checkedRowKeysRef.value = rowKeys;
-
+  const newArr: Array<object> = [];
+  checkedRowKeysRef.value.forEach((key) => {
+    return newArr.push(data.value[key - 1]);
+  });
+  query.value = newArr;
+  console.log(query.value);
   emit("active_query", checkedRowKeysRef.value, data.value);
 };
 </script>

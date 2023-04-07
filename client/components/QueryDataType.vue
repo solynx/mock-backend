@@ -13,7 +13,7 @@
   </n-tabs>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { NTabs, NTab, NTabPane, NButton } from "naive-ui";
 </script>
 

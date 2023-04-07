@@ -1,31 +1,24 @@
 type RowData = {
-    key: string;
+    key: number;
     param: string;
     value: string;
     description: string;
   };
   const createData = (): RowData[] => [
     {
-      key: "aaaa",
-      param: "12",
-      value: "àdsdfdsf",
-      description: "",
-    },
-    {
-      key: "a11",
-      param: "2",
-      value: "asdasd",
-      description: "",
-    },
-    {
-      key: "aa",
-      param: "3",
+      key: 1,
+      param: "",
       value: "",
       description: "",
     },
+
+  
   ];
  
 export const useUriQP = () =>{
     return useState("data", () => createData());
+}
+export const query_actived = () =>{
+  return useState("query_active", () => []);
 }
 

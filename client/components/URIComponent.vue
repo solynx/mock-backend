@@ -6,6 +6,7 @@
         v-model:value="props.uri.method"
         class="w-2/12"
       />
+
       <NInput
         :style="{ width: '100%' }"
         class="bg-neutral-200"
@@ -33,7 +34,10 @@ const props = defineProps({
   filter_param: Array,
 });
 const { $myPlugin } = useNuxtApp();
-const abc = computed(() => props.uri.uri_component + $myPlugin.showUri());
+// const abc = computed(() => props.uri.uri_component + $myPlugin.showUri());
+// const testa = useState(
+//   ("test1", () => props.uri.uri_component + $myPlugin.showUri())
+// );
 const ac = useState("fake", $myPlugin.showUri());
 const item_selected = useState("item_select");
 const emit = defineEmits(["change_link"]);

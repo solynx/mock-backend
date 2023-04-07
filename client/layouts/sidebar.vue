@@ -1,31 +1,35 @@
 <template>
   <NMessageProvider>
-    <NLoadingBarProvider>
-      <NDialogProvider>
-        <div class="wrapper flex">
-          <Sidebar
-            :collections="collections.data"
-            @item-selected="getItemSelected"
-            @toggle-layout="toggleLayout"
-            :servers="filterServer"
-            class="w-1/5"
-          ></Sidebar>
-          <Content
-            v-if="element_selected !== 'show_create_mock'"
-            :item="item_select"
-            :item_link="item_link"
-            :uri_params="uri_param"
-            class="w-4/5"
-          >
-          </Content>
-          <MockServer
-            v-if="element_selected === 'show_create_mock'"
-            @createServer="createMockServer"
-            class="w-4/5"
-          ></MockServer>
-        </div>
-      </NDialogProvider>
-    </NLoadingBarProvider>
+    <NDialogProvider>
+      <NNotificationProvider :placement="placement">
+        <NLoadingBarProvider>
+          <NDialogProvider>
+            <div class="wrapper flex">
+              <Sidebar
+                :collections="collections.data"
+                @item-selected="getItemSelected"
+                @toggle-layout="toggleLayout"
+                :servers="filterServer"
+                class="w-1/5"
+              ></Sidebar>
+              <Content
+                v-if="element_selected !== 'show_create_mock'"
+                :item="item_select"
+                :item_link="item_link"
+                :uri_params="uri_param"
+                class="w-4/5"
+              >
+              </Content>
+              <MockServer
+                v-if="element_selected === 'show_create_mock'"
+                @createServer="createMockServer"
+                class="w-4/5"
+              ></MockServer>
+            </div>
+          </NDialogProvider>
+        </NLoadingBarProvider>
+      </NNotificationProvider>
+    </NDialogProvider>
   </NMessageProvider>
 </template>
 
@@ -36,11 +40,14 @@ import {
   NCard,
   useMessage,
   useDialog,
+  NNotificationProvider,
+  NDialogProvider,
 } from "naive-ui";
 import { v4 as uuidv4 } from "uuid";
 //get all collection
 const message = useMessage();
 const dialog = useDialog();
+const placement = "bottom-right";
 const { data: sidebarList } = await useFetch(
   "http://127.0.0.1:8000/admin/collection.json",
   {}
@@ -80,7 +87,7 @@ const getItemSelected = (bread_cum: Array, item: object) => {
   console.log(item_link.value);
   item_select.value = item;
 
-  uri_param.value = item.uri_component;
+  uri_param.value = item.uri_component ?? "";
 };
 const modeCollection = ref(true);
 const toggleLayout = () => {

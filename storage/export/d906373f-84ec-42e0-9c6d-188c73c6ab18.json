@@ -1,0 +1,93 @@
+{
+ "info": {
+  "_postman_id": "d906373f-84ec-42e0-9c6d-188c73c6ab18",
+  "name": "New Collection",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+  "_exporter_id": 53085096
+ },
+ "item": [
+  {
+   "name": "New Folder",
+   "item": [
+    {
+     "name": "New Request",
+     "method": "GET",
+     "header": null,
+     "response": [
+      {
+       "name": "New response",
+       "_postman_previewlanguage": "json",
+       "header": null,
+       "cookie": null,
+       "body": "",
+       "originalRequest": {
+        "method": "GET",
+        "header": "",
+        "url": {
+         "raw": "https://jsonplaceholder.typicode.com/",
+         "host": [
+          "jsonplaceholder",
+          "typicode",
+          "com"
+         ]
+        },
+        "port": "",
+        "path": [
+         "",
+         ""
+        ]
+       }
+      }
+     ],
+     "body": {
+      "mode": "",
+      "raw": "",
+      "options": {
+       "raw": {
+        "language": "json"
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "New Request",
+   "method": "GET",
+   "header": null,
+   "response": [
+    {
+     "name": "New response",
+     "_postman_previewlanguage": "json",
+     "header": null,
+     "cookie": null,
+     "body": "{\n  \"userId\": 1,\n  \"id\": 1,\n  \"title\": \"delectus aut autem\",\n  \"completed\": false\n}",
+     "originalRequest": {
+      "method": "GET",
+      "header": "",
+      "url": {
+       "raw": "https://google.com",
+       "host": [
+        "google",
+        "com"
+       ]
+      },
+      "port": "",
+      "path": [
+       ""
+      ]
+     }
+    }
+   ],
+   "body": {
+    "mode": "",
+    "raw": "",
+    "options": {
+     "raw": {
+      "language": "json"
+     }
+    }
+   }
+  }
+ ]
+}

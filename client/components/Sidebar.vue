@@ -44,6 +44,15 @@
           </NDropdown>
         </li>
       </ul>
+      <n-upload
+        @finish="handleFinish"
+        action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
+        ref="uploadRef"
+      >
+        <n-button size="small" :default-upload="false" tertiary
+          >Import</n-button
+        >
+      </n-upload>
 
       <NScrollbar style="max-height: 85vh">
         <n-tabs
@@ -79,7 +88,7 @@
                       size="tiny"
                       secondary
                       type="tertiary"
-                      @click="exportModal"
+                      @click="exportModal(collection, true)"
                     >
                       <small> Export</small>
                     </n-button>
@@ -93,7 +102,9 @@
                       size="huge"
                       :segmented="segmented"
                     >
-                      <div><b>Collection Name</b></div>
+                      <div>
+                        <b>{{ collection.name }}</b>
+                      </div>
                       <div>will be exported as a JSON file. Export as:</div>
                       <n-radio-group
                         v-model:value="json_version"
@@ -119,11 +130,16 @@
                             strong
                             secondary
                             type="tertiary"
-                            @click="exportModal"
+                            @click="exportModal(collection, false)"
                           >
                             Cancel
                           </n-button>
-                          <n-button strong class="no-tailwind" color="#ff6c37">
+                          <n-button
+                            strong
+                            class="no-tailwind"
+                            color="#ff6c37"
+                            @click="dowloadFile"
+                          >
                             Export
                           </n-button>
                         </n-space>
@@ -210,24 +226,27 @@
                       </template>
                       <n-collapse>
                         <!-- Request In Folder-->
-                        <n-collapse
-                          v-for="(request, index) in folder.requests"
-                          @click="
-                            getItemSelected(
-                              [
-                                { id: collection.id, name: collection.name },
-                                { id: folder.id, name: folder.name },
-                              ],
-                              request
-                            )
-                          "
-                        >
+                        <n-collapse v-for="(request, index) in folder.requests">
                           <n-collapse-item
                             :title="`${request.name}`"
                             :name="request.id"
                           >
                             <template #header>
-                              <span v-if="editingIndex !== request.id">
+                              <span
+                                v-if="editingIndex !== request.id"
+                                @click="
+                                  getItemSelected(
+                                    [
+                                      {
+                                        id: collection.id,
+                                        name: collection.name,
+                                      },
+                                      { id: folder.id, name: folder.name },
+                                    ],
+                                    request
+                                  )
+                                "
+                              >
                                 {{ request.name }}</span
                               >
                               <input
@@ -274,7 +293,17 @@
                               :name="res.id"
                             >
                               <template #header>
-                                <span v-if="editingIndex !== res.id">
+                                <span
+                                  v-if="editingIndex !== res.id"
+                                  @click="
+                                    getResponseSelected(
+                                      collection,
+                                      folder,
+                                      request,
+                                      res
+                                    )
+                                  "
+                                >
                                   {{ res.name }}</span
                                 >
                                 <input
@@ -381,10 +410,19 @@
                         v-for="(res, index) in request.responses"
                         :title="`${res.name}`"
                         :name="res.id"
-                        @click="getResponseSelected(collection, request, res)"
                       >
                         <template #header>
-                          <span v-if="editingIndex !== res.id">
+                          <span
+                            v-if="editingIndex !== res.id"
+                            @click="
+                              getResponseSelected(
+                                collection,
+                                null,
+                                request,
+                                res
+                              )
+                            "
+                          >
                             {{ res.name }}</span
                           >
                           <input
@@ -467,6 +505,11 @@ import {
   NRadio,
   NTabs,
   NTabPane,
+  useNotification,
+  NUpload,
+  UploadFileInfo,
+  useDialog,
+  UploadInst,
 } from "naive-ui";
 import {
   AddOutline as AddIcon,
@@ -479,14 +522,19 @@ const props = defineProps({
   collections: Array,
   servers: Array,
 });
+
 const ModeAddButton = ref(true);
 const item_selected = useState("item_select", () => "");
 const response_actived = useState("response_actived", () => "");
 const belong_collection = useState("belong_collection", () => "");
+const belong_folder = useState("belong_folder", () => "");
 const belong_request = useState("belong_request", () => "");
+const notification = useNotification();
+const dialog = useDialog();
 const changeAddButton = () => {
   ModeAddButton.value = !ModeAddButton.value;
 };
+const uploadRef = ref<UploadInst | null>(null);
 const emit = defineEmits(["item-selected", "toggle-layout"]);
 const message = useMessage();
 const treeOptions = [
@@ -507,12 +555,14 @@ const treeOptions = [
     id: "key2",
   },
 ];
+
 const options = [
   {
     label: "Marina Bay Sands",
     key: "Marina Bay Sands",
   },
 ];
+const choose_collection = ref({});
 // const toggle = ref(false);
 // const toggleButton = (status: any) => {
 //   toggle.value = !status.value;
@@ -775,6 +825,7 @@ const saveNameRequest = async (request: object, new_name: string) => {
   editingIndex.value = -1;
   return message.error("Failed!");
 };
+
 const deleteRequest = async (
   parent_el: object,
   request: object,
@@ -872,14 +923,17 @@ const getItemSelected = (bread_cum: Array, item: object) => {
 };
 const getResponseSelected = (
   collection: object,
+  folder: object,
   request: object,
   item: object
 ) => {
-  const bread_cum = [collection, request];
+  const bread_cum =
+    folder !== null ? [collection, folder, request] : [collection, request];
 
   item_selected.value = "response";
   response_actived.value = item;
   belong_collection.value = collection;
+  belong_folder.value = folder !== null ? folder : "";
   belong_request.value = request;
   emit("item-selected", bread_cum, item);
 };
@@ -887,7 +941,10 @@ const Alo = () => {
   console.log("alo");
 };
 
-const exportModal = () => {
+const exportModal = (collection: object, choose: boolean) => {
+  if (choose) {
+    choose_collection.value = collection;
+  }
   mode.value = !mode.value;
 };
 const newMockServer = () => {
@@ -895,6 +952,207 @@ const newMockServer = () => {
 };
 const toggleMock = (element: string) => {
   toggle_mock_collection.value = element;
+};
+const downloadJSON = (data: object, name: string) => {
+  // Tạo một đối tượng Blob từ dữ liệu JSON
+  const blob = new Blob([JSON.stringify(data, null, 4)], {
+    type: "application/json",
+  });
+  // Tạo một URL cho đối tượng Blob
+  const url = URL.createObjectURL(blob);
+  // Tạo một thẻ <a> ẩn với thuộc tính download và href là URL
+  const link = document.createElement("a");
+  link.download = name + ".collection_data.json";
+  link.href = url;
+  document.body.appendChild(link);
+  link.click();
+  // Xóa thẻ <a> và thu hồi URL
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+const dowloadFile = async () => {
+  const { data } = await useFetch(
+    "http://127.0.0.1:8000/admin/format-collection.json",
+    {
+      method: "POST",
+
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(choose_collection.value),
+    }
+  );
+
+  if (data.value != null) {
+    downloadJSON(data.value, choose_collection.value.name);
+    notification.success({
+      content: "Your collection exported successfuly!",
+      duration: 5000,
+      closable: false,
+      placement: "bottom-right",
+    });
+  }
+  mode.value = !mode.value;
+};
+const handleFinish = ({
+  file,
+  event,
+}: {
+  file: UploadFileInfo;
+  event?: ProgressEvent;
+}) => {
+  if (file.type !== "application/json") {
+    return message.error("File type must be .json");
+  }
+  let text = file.file;
+  text?.text().then((text) => {
+    let collection_import = JSON.parse(text);
+
+    let check = props.collections?.find((collection) => {
+      return collection.name === collection_import.info.name;
+    });
+    if (check != null) {
+      dialog.warning({
+        title: "Collection Exists",
+        content: `A collection ${check.name} already exists. What would you like to do?"`,
+        positiveText: "Import As Copy",
+        negativeText: "Replace",
+        onPositiveClick: () => {
+          collection_import.info.name =
+            collection_import.info.name +
+            "- copy" +
+            Math.floor(Math.random() * 100) +
+            1;
+
+          return addCollectionWithJsonFile(collection_import);
+        },
+        onNegativeClick: () => {
+          message.error("Not Sure");
+        },
+      });
+    } else {
+      return addCollectionWithJsonFile(collection_import);
+    }
+  });
+};
+const addCollectionWithJsonFile = async (collection_import: object) => {
+  const collection_copy = {
+    id: uuidv4(),
+    name: "",
+    folders: [],
+    requests: [],
+  };
+  collection_copy.name = collection_import.info.name;
+
+  await useFetch("http://127.0.0.1:8000/admin/collection.json", {
+    method: "POST",
+
+    headers: { "Content-type": "application/json" },
+    body: JSON.stringify(collection_copy),
+  });
+  if (collection_import.item !== null) {
+    collection_import.item.forEach(async (item) => {
+      if (item.item) {
+        const folder = {
+          id: uuidv4(),
+          name: item.name,
+          requests: [],
+          collection_id: collection_copy.id,
+        };
+        const { data } = await useFetch(
+          "http://127.0.0.1:8000/admin/folder.json",
+          {
+            method: "POST",
+
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify(folder),
+          }
+        );
+        let requests = item.item; //arr
+        requests.forEach(async (req) => {
+          const request = {
+            id: uuidv4(),
+            name: req.name,
+            method: req.method ?? "GET",
+            uri_component: req.request ? req.request.url.raw : "",
+            responses: [],
+            collection_id: collection_copy.id,
+            folder_id: folder.id,
+          };
+
+          await useFetch("http://127.0.0.1:8000/admin/request.json", {
+            method: "POST",
+
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify(request),
+          });
+          let responses;
+
+          if ((responses = req.response)) {
+            responses.forEach(async (res) => {
+              const response = {
+                id: uuidv4(),
+                name: res.name,
+                method: res.originalRequest.method ?? "",
+                uri_component: res.originalRequest.url
+                  ? res.originalRequest.url.raw
+                  : "",
+                request_id: request.id,
+                body: res.body,
+              };
+              await useFetch("http://127.0.0.1:8000/admin/response.json", {
+                method: "POST",
+
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify(response),
+              });
+              request.responses.push(response);
+            });
+          }
+          folder.requests.push(request);
+          console.log(folder);
+        });
+        collection_copy.folders.push(folder);
+      } else {
+        const request = {
+          id: uuidv4(),
+          name: item.name,
+          method: item.request.method ?? "GET",
+          uri_component: item.request ? item.request.url.raw : "",
+          responses: [],
+          collection_id: collection_copy.id,
+          folder_id: null,
+        };
+        console.log(item);
+        console.log(request);
+        await useFetch("http://127.0.0.1:8000/admin/request.json", {
+          method: "POST",
+
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify(request),
+        });
+        if (item.response) {
+          item.response.forEach((res) => {
+            const response = {
+              id: uuidv4(),
+              name: res.name,
+              method: res.originalRequest.method,
+              uri_component: res.originalRequest.url.raw,
+              request_id: request.id,
+              body: res.body,
+            };
+            request.responses.push(response);
+          });
+        }
+        collection_copy.requests.push(request);
+      }
+    });
+  }
+  props.collections?.push(collection_copy);
+  uploadRef.value?.clear();
+  return notification.success({
+    content: "Your collection exported successfuly!",
+    duration: 5000,
+    closable: false,
+  });
 };
 </script>
 <style scoped>
