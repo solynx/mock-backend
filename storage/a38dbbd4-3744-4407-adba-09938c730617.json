@@ -1,0 +1,17 @@
+{
+    "DELETE": null,
+    "GET": [
+        {
+            "path": "/api/abc",
+            "method": "GET",
+            "status_code": 200,
+            "collection_id": "a38dbbd4-3744-4407-adba-09938c730617",
+            "response_body": {
+                "name": "GPT"
+            }
+        }
+    ],
+    "PATCH": null,
+    "POST": null,
+    "PUT": null
+}

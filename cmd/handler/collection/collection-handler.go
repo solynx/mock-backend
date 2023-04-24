@@ -4,6 +4,7 @@ import (
 	"app/database"
 	export_format "app/models/export"
 	"app/models/menu/collections"
+	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
 	"math/rand"
@@ -40,98 +41,105 @@ func FormatCollection(c *fiber.Ctx) error {
 	if err := c.BodyParser(&collection); err != nil {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
+
 	result := collections.GetCollection(db, *collection)
+
 	res_result := export_format.Response{}
-	raw_op_req := export_format.RawLang{Language: "json"}
-	option_req := export_format.OptionsOfRequest{Raw: raw_op_req}
+	// raw_op_req := export_format.RawLang{Language: "json"}
+	// option_req := export_format.OptionsOfRequest{Raw: raw_op_req}
 
 	collection_result := export_format.Collection1{Info: export_format.Info{Id: result.ID.String(), Name: result.Name, Schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json", ExportId: int32(rand.Intn(99999999))}}
+	if result.Variable != "" {
+		decoded, err1 := base64.StdEncoding.DecodeString(result.Variable)
+		if err1 != nil {
+			return c.JSON(fiber.Map{"status": false})
+		}
 
+		err2 := json.Unmarshal(decoded, &collection_result.Variable)
+		if err2 != nil {
+			return c.JSON(fiber.Map{"status": false})
+		}
+	}
 	for _, folder := range result.Folders {
 
 		child_folder := export_format.Folder{Name: folder.Name}
 		for _, req := range folder.Requests {
 
-			if req.Method != "GET" {
-				request_child := export_format.Request{}
-				request_child.Name = req.Name
-				request_child.Method = req.Method
-				request_child.Header = nil
-				request_child.BodyOfRequest.Mode = ""
-				request_child.BodyOfRequest.Raw = req.UriComponent
-				request_child.BodyOfRequest.Options = option_req
-				for _, r := range req.Responses {
-					url_res := export_format.Url{}
-					originalReq := export_format.OriginalRequest{}
+			url_req, _ := url.Parse(req.UriComponent)
+			request_child := export_format.RequestOfCollection{}
 
-					u, err := url.Parse(r.UriComponent)
-					if err != nil {
-						panic(err)
-					}
-					//url
-					url_res.Raw = r.UriComponent
-					url_res.Host = strings.Split(u.Hostname(), ".")
-					url_res.Path = strings.Split(u.Path, "/")
-					url_res.Port = u.Port()
-					//originalreq
-					originalReq.Header = ""
-					originalReq.Method = r.Method
+			request_child.Name = req.Name
+			request_child.Request.Method = req.Method
 
-					originalReq.Url = url_res
-					//response
-					res_result.Body = r.Body
-					res_result.Cookie = nil
-					res_result.Header = nil
-					res_result.Name = r.Name
-					res_result.PreviewLanguage = "json"
-					res_result.OriginalRequest = originalReq
-					request_child.Response = append(request_child.Response, res_result)
+			if req.Header != "" {
+				decoded, err1 := base64.StdEncoding.DecodeString(req.Header)
+				if err1 != nil {
+					return c.JSON(fiber.Map{"status": false})
 				}
-				child_folder.Item = append(child_folder.Item, request_child)
-			} else {
-				url_req, _ := url.Parse(req.UriComponent)
-				request_child := export_format.RequestOfCollection{}
 
-				request_child.Name = req.Name
-				request_child.Request.Method = req.Method
-				request_child.Request.Header = nil
-
-				request_child.Request.Url.Raw = req.UriComponent
-				request_child.Request.Url.Host = strings.Split(url_req.Hostname(), ".")
-				request_child.Request.Url.Port = url_req.Port()
-				request_child.Request.Url.Protocol = "http"
-				request_child.Request.Url.Path = strings.Split(url_req.Path, "/")
-				for _, r := range req.Responses {
-					url_res := export_format.Url{}
-					originalReq := export_format.OriginalRequest{}
-
-					u, err := url.Parse(r.UriComponent)
-					if err != nil {
-						panic(err)
-					}
-					//url
-					url_res.Raw = r.UriComponent
-					url_res.Host = strings.Split(u.Hostname(), ".")
-					url_res.Path = strings.Split(u.Path, "/")
-					url_res.Port = u.Port()
-					//originalreq
-					originalReq.Header = ""
-					originalReq.Method = r.Method
-
-					originalReq.Url = url_res
-
-					//response
-					res_result.Body = r.Body
-					res_result.Cookie = nil
-					res_result.Header = nil
-					res_result.Name = r.Name
-					res_result.PreviewLanguage = "json"
-					res_result.OriginalRequest = originalReq
-
-					request_child.Response = append(request_child.Response, res_result)
+				err2 := json.Unmarshal(decoded, &request_child.Request.Header)
+				if err2 != nil {
+					return c.JSON(fiber.Map{"status": false})
 				}
-				child_folder.Item = append(child_folder.Item, request_child)
 			}
+
+			request_child.Request.Url.Raw = req.UriComponent
+			request_child.Request.Url.Host = strings.Split(url_req.Hostname(), ".")
+			request_child.Request.Url.Port = url_req.Port()
+			request_child.Request.Url.Protocol = "http"
+			request_child.Request.Url.Path = strings.Split(url_req.Path, "/")
+
+			request_child.ProtocolProfileBehavior.BodyPruning = false
+			request_child.Request.Header = [0]int{}
+			request_child.Request.Url.Query = [0]int{}
+			if req.Body != "" {
+				request_child.Request.BodyOfRequest.Mode = "raw"
+				request_child.Request.BodyOfRequest.Raw = req.Body
+				request_child.Request.BodyOfRequest.Options.Raw.Language = "json"
+				request_child.ProtocolProfileBehavior.BodyPruning = true
+			}
+			if req.Query != "" {
+				decoded, err1 := base64.StdEncoding.DecodeString(req.Query)
+				if err1 != nil {
+					return c.JSON(fiber.Map{"status": false})
+				}
+
+				err2 := json.Unmarshal(decoded, &request_child.Request.Url.Query)
+				if err2 != nil {
+					return c.JSON(fiber.Map{"status": false})
+				}
+			}
+			for _, r := range req.Responses {
+				url_res := export_format.Url{}
+				originalReq := export_format.OriginalRequest{}
+
+				u, err := url.Parse(r.UriComponent)
+				if err != nil {
+					panic(err)
+				}
+				//url
+				url_res.Raw = r.UriComponent
+				url_res.Host = strings.Split(u.Hostname(), ".")
+				url_res.Path = strings.Split(u.Path, "/")
+				url_res.Port = u.Port()
+				//originalreq
+				originalReq.Header = ""
+				originalReq.Method = r.Method
+
+				originalReq.Url = url_res
+
+				//response
+				res_result.Body = r.Body
+				res_result.Cookie = nil
+				res_result.Header = nil
+				res_result.Name = r.Name
+				res_result.PreviewLanguage = "json"
+				res_result.OriginalRequest = originalReq
+
+				request_child.Response = append(request_child.Response, res_result)
+			}
+
+			child_folder.Item = append(child_folder.Item, request_child)
 
 		}
 		collection_result.Item = append(collection_result.Item, child_folder)
@@ -143,13 +151,48 @@ func FormatCollection(c *fiber.Ctx) error {
 
 		request_child.Name = req.Name
 		request_child.Request.Method = req.Method
-		request_child.Request.Header = nil
+
+		request_child.ProtocolProfileBehavior.BodyPruning = false
+		request_child.Request.Url.Query = [0]int{}
+		request_child.Request.Header = [0]int{}
+		if req.Body != "" {
+			request_child.Request.BodyOfRequest.Mode = "raw"
+			request_child.Request.BodyOfRequest.Raw = req.Body
+			request_child.Request.BodyOfRequest.Options.Raw.Language = "json"
+			request_child.ProtocolProfileBehavior.BodyPruning = true
+		}
+
+		if req.Header != "" {
+
+			decoded, err1 := base64.StdEncoding.DecodeString(req.Header)
+			if err1 != nil {
+				return c.JSON(fiber.Map{"status": false})
+			}
+
+			err2 := json.Unmarshal(decoded, &request_child.Request.Header)
+
+			if err2 != nil {
+				return c.JSON(fiber.Map{"status": false})
+			}
+		}
 
 		request_child.Request.Url.Raw = req.UriComponent
 		request_child.Request.Url.Host = strings.Split(url_req.Hostname(), ".")
 		request_child.Request.Url.Port = url_req.Port()
 		request_child.Request.Url.Protocol = "http"
 		request_child.Request.Url.Path = strings.Split(url_req.Path, "/")
+
+		if req.Query != "" {
+			decoded, err1 := base64.StdEncoding.DecodeString(req.Query)
+			if err1 != nil {
+				return c.JSON(fiber.Map{"status": false})
+			}
+
+			err2 := json.Unmarshal(decoded, &request_child.Request.Url.Query)
+			if err2 != nil {
+				return c.JSON(fiber.Map{"status": false})
+			}
+		}
 		for _, r := range req.Responses {
 			url_res := export_format.Url{}
 			originalReq := export_format.OriginalRequest{}
@@ -225,6 +268,7 @@ func UpdateCollection(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
 	collection.UpdatedAt = time.Now()
+
 	db := database.Database
 	result := collections.UpdateCollectionById(db, *collection)
 	if result {

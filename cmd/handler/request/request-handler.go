@@ -38,6 +38,7 @@ func UpdateRequest(c *fiber.Ctx) error {
 	if err := c.BodyParser(&request); err != nil {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
+
 	request.UpdatedAt = time.Now()
 	db := database.Database
 	result := requests.UpdateRequestById(db, *request)

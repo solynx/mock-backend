@@ -1,0 +1,87 @@
+{
+ "info": {
+  "_postman_id": "0a9952be-8a55-4344-8593-63f02c3d5dbe",
+  "name": "Test",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+  "_exporter_id": 5251183
+ },
+ "item": [
+  {
+   "name": "New Folder",
+   "item": [
+    {
+     "name": "New Request",
+     "request": {
+      "method": "GET",
+      "header": null,
+      "url": {
+       "raw": "https://jsonplaceholder.typicode.com/todos/1",
+       "protocol": "http",
+       "host": [
+        "jsonplaceholder",
+        "typicode",
+        "com"
+       ],
+       "port": "",
+       "path": [
+        "",
+        "todos",
+        "1"
+       ]
+      }
+     },
+     "response": [
+      {
+       "name": "New response",
+       "_postman_previewlanguage": "json",
+       "header": null,
+       "cookie": null,
+       "body": "{\n \"userId\": 1,\n \"id\": 1,\n \"title\": \"delectus aut autem\",\n \"completed\": false\n}",
+       "originalRequest": {
+        "method": "GET",
+        "header": "",
+        "url": {
+         "raw": "https://jsonplaceholder.typicode.com/todos/1",
+         "host": [
+          "jsonplaceholder",
+          "typicode",
+          "com"
+         ],
+         "port": "",
+         "path": [
+          "",
+          "todos",
+          "1"
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "New Request",
+   "request": {
+    "method": "GET",
+    "header": null,
+    "url": {
+     "raw": "https://jsonplaceholder.typicode.com/todos/2",
+     "protocol": "http",
+     "host": [
+      "jsonplaceholder",
+      "typicode",
+      "com"
+     ],
+     "port": "",
+     "path": [
+      "",
+      "todos",
+      "2"
+     ]
+    }
+   },
+   "response": null
+  }
+ ]
+}

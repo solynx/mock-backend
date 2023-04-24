@@ -5,6 +5,7 @@
         @update:checked-row-keys="handleCheck"
         :columns="columns"
         :data="data"
+        :default-checked-row-keys="checkedRowKeys1"
       />
     </div>
   </n-scrollbar>
@@ -19,6 +20,7 @@ import {
   DataTableRowKey,
 } from "naive-ui";
 import { useUriQP } from "~~/composables/useUriQP";
+import { useURIStore } from "~/stores/test";
 type RowData = {
   key: number;
   param: string;
@@ -27,6 +29,8 @@ type RowData = {
 };
 // const data = useState("data", () => createData());
 // const same_data = useState("data");
+const uriStore = useURIStore();
+const { uri, queries, url_changed } = uriStore;
 const data = useUriQP();
 const query = useState("query_active");
 const emit = defineEmits(["binding_param", "active_query"]);
@@ -88,15 +92,19 @@ const createColumns = (): DataTableColumns<RowData> => [
   },
 ];
 const columns = createColumns();
-const checkedRowKeysRef = ref<Array<string | number>>([]);
+const checkedRowKeysRef = ref<Array<string | number>>([1]);
+const checkedRowKeys1 = useState("checkedRowKeys1");
 const handleCheck = (rowKeys: DataTableRowKey[]) => {
   checkedRowKeysRef.value = rowKeys;
   const newArr: Array<object> = [];
   checkedRowKeysRef.value.forEach((key) => {
     return newArr.push(data.value[key - 1]);
   });
+
   query.value = newArr;
-  console.log(query.value);
+
+  // uriStore.queries = newArr;
+  // uriStore.convertUrl();
   emit("active_query", checkedRowKeysRef.value, data.value);
 };
 </script>

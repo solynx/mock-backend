@@ -4,7 +4,8 @@
       <n-data-table
         @update:checked-row-keys="handleCheck"
         :columns="columns"
-        :data="data1"
+        :data="data"
+        :max="5"
       />
     </div>
   </n-scrollbar>
@@ -17,6 +18,7 @@ import {
   NInput,
   NDataTable,
   DataTableRowKey,
+  NButton,
 } from "naive-ui";
 type RowData = {
   key: string;
@@ -26,13 +28,7 @@ type RowData = {
 };
 const createData = (): RowData[] => [
   {
-    key: "aaaa",
-    param: "",
-    value: "",
-    description: "",
-  },
-  {
-    key: "a11",
+    key: 1,
     param: "",
     value: "",
     description: "",
@@ -40,7 +36,8 @@ const createData = (): RowData[] => [
 ];
 // const data = useState("data", () => createData());
 // const same_data = useState("data");
-const data1 = createData();
+const data = useState("header_req", () => createData());
+const header_actived = useState("header_actived", () => {});
 
 const emit = defineEmits(["binding_param", "active_query"]);
 const createColumns = (): DataTableColumns<RowData> => [
@@ -71,6 +68,15 @@ const createColumns = (): DataTableColumns<RowData> => [
         value: row.value,
         onUpdateValue(v) {
           data.value[index].value = v;
+          if (data.value.length === row.key && data.value.length < 5) {
+            const newRow: RowData = {
+              key: data.value.length + 1,
+              param: "",
+              value: "",
+              description: "",
+            };
+            data.value.push(newRow);
+          }
           emit("binding_param", data.value);
         },
 
@@ -96,5 +102,20 @@ const columns = createColumns();
 const checkedRowKeysRef = ref<Array<string | number>>([]);
 const handleCheck = (rowKeys: DataTableRowKey[]) => {
   checkedRowKeysRef.value = rowKeys;
+  const newArr: Array<object> = [];
+  checkedRowKeysRef.value.forEach((key) => {
+    return newArr.push(data.value[key - 1]);
+  });
+  header_actived.value = [];
+  newArr.forEach((item) => {
+    let key = item.param;
+    let value = item.value;
+    let header = { [key]: value };
+
+    header_actived.value[key] = value;
+  });
+
+  // uriStore.queries = newArr;
+  // uriStore.convertUrl();
 };
 </script>

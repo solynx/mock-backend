@@ -14,11 +14,15 @@ type RowData = {
 
   
   ];
- 
+
 export const useUriQP = () =>{
     return useState("data", () => createData());
 }
 export const query_actived = () =>{
   return useState("query_active", () => []);
+}
+export const full_url = () =>{
+  const full_url= useState("full_url_params", ()=>"a");
+  return full_url;
 }
 

@@ -3,7 +3,11 @@
     <n-config-provider>
       <n-space>
         <n-button-group>
-          <n-button tertiary :class="{ saving: response_saving }">
+          <n-button
+            tertiary
+            :class="{ saving: response_saving }"
+            @click="CheckMockApi"
+          >
             <n-icon size="24">
               <save-icon />
             </n-icon>
@@ -51,7 +55,24 @@ import {
   PencilOutline as PencilIcon,
   ChatboxEllipsesOutline as MomentModeIcon,
 } from "@vicons/ionicons5";
+const emit = defineEmits(["update_response", "update_api"]);
 const response_saving = useState("response_saving");
+const response_actived = useState("response_actived");
+const collection_parent = useState("belong_collection");
+const request_parent = useState("belong_request");
+const CheckMockApi = () => {
+  if (collection_parent.value.is_server) {
+    const url = new URL(response_actived.value.uri_component);
+    const path = url.pathname;
+    const full_path = path.split("/");
+    const uuid = full_path[1];
+    const after_uuid_path = "/" + full_path.slice(2).join("/");
+    if (uuid === collection_parent.value.id) {
+      return emit("update_api", response_actived.value, after_uuid_path);
+    }
+  }
+  return emit("update_response", response_actived.value);
+};
 </script>
 <style scoped>
 .pencil-icon-background {

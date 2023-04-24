@@ -24,26 +24,32 @@ type Response struct {
 type Request struct {
 	Name          string        `json:"name"`
 	Method        string        `json:"method"`
-	Header        []string      `json:"header"`
+	Header        interface{}   `json:"header"`
 	Response      []Response    `json:"response"`
 	BodyOfRequest BodyOfRequest `json:"body"`
 }
 type RequestOfCollection struct {
-	Name     string        `json:"name"`
-	Request  SingleRequest `json:"request"`
-	Response []Response    `json:"response"`
+	Name                    string             `json:"name"`
+	ProtocolProfileBehavior disableBodyPruning `json:"protocolProfileBehavior"`
+	Request                 SingleRequest      `json:"request"`
+	Response                []Response         `json:"response"`
+}
+type disableBodyPruning struct {
+	BodyPruning bool `json:"disableBodyPruning"`
 }
 type SingleRequest struct {
-	Method string      `json:"method"`
-	Header []string    `json:"header"`
-	Url    Url_Req_Col `json:"url"`
+	Method        string        `json:"method"`
+	Header        interface{}   `json:"header"`
+	BodyOfRequest BodyOfRequest `json:"body"`
+	Url           Url_Req_Col   `json:"url"`
 }
 type Url_Req_Col struct {
-	Raw      string   `json:"raw"`
-	Protocol string   `json:"protocol"`
-	Host     []string `json:"host"`
-	Port     string   `json:"port"`
-	Path     []string `json:"path"`
+	Raw      string      `json:"raw"`
+	Protocol string      `json:"protocol"`
+	Host     []string    `json:"host"`
+	Port     string      `json:"port"`
+	Path     []string    `json:"path"`
+	Query    interface{} `json:"query"`
 }
 type BodyOfRequest struct {
 	Mode    string           `json:"mode"`
@@ -68,8 +74,9 @@ type CollectionJson struct {
 	Collection Collection1
 }
 type Collection1 struct {
-	Info Info          `json:"info"`
-	Item []interface{} `json:"item"`
+	Info     Info          `json:"info"`
+	Item     []interface{} `json:"item"`
+	Variable interface{}   `json:"variable,"`
 }
 type Info struct {
 	Id       string `json:"_postman_id"`

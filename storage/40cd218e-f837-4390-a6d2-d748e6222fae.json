@@ -1,0 +1,18 @@
+{
+    "DELETE": null,
+    "GET": [
+        {
+            "path": "/api/congaquan",
+            "method": "GET",
+            "status_code": 200,
+            "collection_id": "40cd218e-f837-4390-a6d2-d748e6222fae",
+            "response_body": {
+                "age": 23,
+                "name": "congaquan"
+            }
+        }
+    ],
+    "PATCH": null,
+    "POST": null,
+    "PUT": null
+}

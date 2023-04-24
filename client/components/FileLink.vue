@@ -1,5 +1,5 @@
 <template>
-  <n-breadcrumb separator="|">
+  <n-breadcrumb separator="/">
     <n-breadcrumb-item v-for="item in link"> {{ item.name }}</n-breadcrumb-item>
   </n-breadcrumb>
 </template>

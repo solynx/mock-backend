@@ -1,0 +1,17 @@
+{
+    "DELETE": null,
+    "GET": [
+        {
+            "path": "/api/am",
+            "method": "GET",
+            "status_code": 200,
+            "collection_id": "f92ab275-3413-4031-8ddb-52ba4c9a8de8",
+            "response_body": {
+                "a": "a"
+            }
+        }
+    ],
+    "PATCH": null,
+    "POST": null,
+    "PUT": null
+}

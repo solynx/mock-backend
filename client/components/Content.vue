@@ -1,52 +1,66 @@
 <template>
-  <n-card>
-    <div class="w-full">
-      <!-- Phần tag multiple bao gồm có nhiều file được mở cùng lúc tại  thanh này-->
-      <div class="w-no-x">
-        <div class="file-multiple">
-          <n-dynamic-tags v-model:value="tags" />
+  <div class="w-full" style="padding: 3px 10px">
+    <!-- Phần tag multiple bao gồm có nhiều file được mở cùng lúc tại  thanh này-->
+    <div class="w-no-x">
+      <div class="file-multiple">
+        <n-dynamic-tags v-model:value="tags" :max="5" />
+      </div>
+      <n-card size="small">
+        <div class="file-detail flex justify-between">
+          <div class="file-link">
+            <FileLink :link="item_link"></FileLink>
+          </div>
+          <FileOption
+            @update_response="updateResponseBody"
+            @update_api="updateMockApi"
+          ></FileOption>
         </div>
-        <n-card>
-          <div class="file-detail flex justify-between">
-            <div class="file-link">
-              <FileLink :link="item_link"></FileLink>
-            </div>
-            <FileOption></FileOption>
+      </n-card>
+
+      <URIComponent
+        :uri="item"
+        @change_link="getRequest"
+        :filter_param="filteredQueryParam.value"
+        v-if="item_selected === 'response' || item_selected === 'request'"
+      ></URIComponent>
+    </div>
+    <!-- collection-->
+    <div>
+      <CollectionOptionTable
+        v-if="item_selected === 'collection'"
+      ></CollectionOptionTable>
+    </div>
+    <div
+      class="group-func flex pt-4"
+      v-if="item_selected === 'response' || item_selected === 'request'"
+    >
+      <n-card style="width: 50%; min-width: 40%">
+        <div class="group-fun-query mt-3">
+          <div class="request-option">
+            <QueryDataType></QueryDataType>
           </div>
-        </n-card>
+        </div>
+      </n-card>
 
-        <URIComponent
-          :uri="item"
-          @change_link="getRequest"
-          :filter_param="filteredQueryParam.value"
-        ></URIComponent>
-      </div>
-
-      <div class="group-func flex pt-4">
-        <n-card style="width: 50%; min-width: 40%">
-          <div class="group-fun-query mt-3">
-            <div class="request-option">
-              <QueryDataType></QueryDataType>
-            </div>
-          </div>
-        </n-card>
-
-        <n-config-provider style="width: 50%; max-width: 50%" :hljs="hljs">
-          <n-loading-bar-provider>
-            <NSpin :show="!disabledRef" size="small">
-              <ResponseData v-if="item_selected === 'request'"></ResponseData>
-              <MockData
-                v-if="item_selected === 'response'"
-                @update_response="updateResponseBody"
-                @update_api="updateMockApi"
-              ></MockData>
-              <template #description> Just moment... </template>
-            </NSpin>
-          </n-loading-bar-provider>
-        </n-config-provider>
-      </div>
-    </div></n-card
-  >
+      <n-config-provider
+        style="width: 50%; max-width: 50%"
+        :hljs="hljs"
+        v-if="item_selected === 'response' || item_selected === 'request'"
+      >
+        <n-loading-bar-provider>
+          <NSpin :show="!disabledRef" size="small">
+            <ResponseData v-if="item_selected === 'request'"></ResponseData>
+            <MockData
+              v-if="item_selected === 'response'"
+              @update_response="updateResponseBody"
+              @update_api="updateMockApi"
+            ></MockData>
+            <template #description> Just moment... </template>
+          </NSpin>
+        </n-loading-bar-provider>
+      </n-config-provider>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -109,15 +123,71 @@ const cascaderOptions = [
 ];
 const item_selected = useState("item_select");
 const code = useState("code_response", () => "");
-const getRequest = async (request_detail: object, request: object) => {
+const header_actived = useState("header_actived");
+const json_raw = useState("json_raw");
+const var_actived = useState("var_actived", () => {});
+const getRequest = async (request_detail: object) => {
+  props.item.uri_component = request_detail.link;
+  const collection_var = useState("var_collection");
+
+  const params = useState("data");
+  const header_req = useState("header_req");
+  let new_params = [];
+  let new_headers = [];
+  const getUrl = props.item.uri_component.split("?")[0];
+  props.item.uri_component = getUrl;
+
+  params.value.forEach((item) => {
+    if (item.param === "" && item.value === "") return;
+    let param = {
+      key: item.param,
+      value: item.value,
+    };
+    new_params.push(param);
+  });
+  header_req.value.forEach((item) => {
+    if (item.param === "" && item.value === "") return;
+    let param = {
+      key: item.param,
+      value: item.value,
+    };
+    new_headers.push(param);
+  });
+  const jsonString = JSON.stringify(new_params);
+  const base64String = btoa(jsonString);
+  const jsonHeaderString = JSON.stringify(new_headers);
+  const base64HeaderString = btoa(jsonHeaderString);
   loadingBar.start();
   disabledRef.value = false;
   let result;
-  console.log(props.item);
+  let temp_uri = props.item.uri_component;
+
+  var regex = /{{([^}]+)}}/g;
+  var match;
+  while ((match = regex.exec(request_detail.link))) {
+    var paramName = match[1];
+    var paramValue = null;
+    for (var i = 0; i < collection_var.value.length; i++) {
+      if (collection_var.value[i].param === paramName) {
+        paramValue = collection_var.value[i].value;
+        break;
+      }
+    }
+    if (paramValue) {
+      request_detail.link = request_detail.link.replace(match[0], paramValue);
+    }
+  }
+
   const { data: status } = await useFetch(request_detail.link, {
     method: request_detail.method,
-    headers: { "Content-type": "application/json" },
+    headers: header_actived.value ?? { "Content-type": "application/json" },
+    body: request_detail.method !== "GET" ? props.item.body : null,
   });
+  let old_header = props.item.header;
+  let old_query = props.item.query;
+  props.item.header = base64HeaderString;
+  props.item.query = base64String;
+
   const { data: result1 } = await useFetch(
     "http://localhost:8000/admin/request.json",
     {
@@ -126,9 +196,23 @@ const getRequest = async (request_detail: object, request: object) => {
       body: JSON.stringify(props.item),
     }
   );
+
   result = JSON.parse(JSON.stringify(status.value));
+  let result_save_req = JSON.parse(JSON.stringify(result1.value));
+
+  if (!result_save_req.status) {
+    props.item.uri_component = temp_uri;
+    props.item.header = old_header;
+    props.item.query = old_query;
+  }
+
   loadingBar.finish();
   disabledRef.value = true;
+  let bad_request = {
+    error: 404,
+    message: "The API Not Found!",
+  };
+  result = result !== null ? result : bad_request;
   code.value = JSON.stringify(result, null, 1);
 
   return;
@@ -149,7 +233,7 @@ const updateUri = (params: Array) => {
   filteredQueryParam.value = params;
   const query_params = useState("");
 };
-const tags = ref(["teacher", "programmer"]);
+const tags = useState("tags_click");
 const checkedValueRef = ref<string | null>(null);
 const checkedValue = checkedValueRef;
 const response_saving = useState("response_saving");
@@ -223,3 +307,4 @@ const updateMockApi = async (response: object, path: string) => {
   return message.error("Failed!");
 };
 </script>
+<style></style>

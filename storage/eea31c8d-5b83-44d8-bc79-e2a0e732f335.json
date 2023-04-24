@@ -1,0 +1,17 @@
+{
+    "DELETE": null,
+    "GET": [
+        {
+            "path": "/api/user",
+            "method": "GET",
+            "status_code": 200,
+            "collection_id": "eea31c8d-5b83-44d8-bc79-e2a0e732f335",
+            "response_body": {
+                "user": 2
+            }
+        }
+    ],
+    "PATCH": null,
+    "POST": null,
+    "PUT": null
+}

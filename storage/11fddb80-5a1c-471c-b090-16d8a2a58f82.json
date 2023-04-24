@@ -6,23 +6,24 @@
             "method": "GET",
             "status_code": 200,
             "collection_id": "11fddb80-5a1c-471c-b090-16d8a2a58f82",
-            "response_body": [
-                {
-                    "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
-                    "id": 1,
-                    "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-                    "userId": 4
-                },
-                {
-                    "body": "est rerum tempore vitae\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\nqui aperiam non debitis possimus qui neque nisi nulla",
-                    "id": 2,
-                    "title": "qui est esse",
-                    "userId": 1
-                }
-            ]
+            "response_body": {
+                "message": "api updated successfully!12",
+                "status": true
+            }
         }
     ],
     "PATCH": null,
-    "POST": null,
+    "POST": [
+        {
+            "path": "/api/admin1",
+            "method": "POST",
+            "status_code": 200,
+            "collection_id": "11fddb80-5a1c-471c-b090-16d8a2a58f82",
+            "response_body": {
+                "status": true,
+                "user_id": 20
+            }
+        }
+    ],
     "PUT": null
 }

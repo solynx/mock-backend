@@ -34,6 +34,17 @@ func GetCollection(db *gorm.DB, collection Collection) Collection {
 	}).Find(&collection)
 	return collection
 }
+
+//	func GetCollectionVariable(db *gorm.DB, collection Collection_Variable) Collection_Variable {
+//		db.Table("collections").Debug().Preload("Folders", func(db *gorm.DB) *gorm.DB {
+//			return db.Preload("Requests", func(db *gorm.DB) *gorm.DB {
+//				return db.Preload("Responses")
+//			})
+//		}).Preload("Requests", func(db *gorm.DB) *gorm.DB {
+//			return db.Where("`requests`.`folder_id` IS NULL").Preload("Responses")
+//		}).Find(&collection)
+//		return collection
+//	}
 func FormatCollection(db *gorm.DB, collection Collection) Collection {
 	db.Table("collections").Debug().Preload("Folders", func(db *gorm.DB) *gorm.DB {
 		return db.Preload("Requests", func(db *gorm.DB) *gorm.DB {

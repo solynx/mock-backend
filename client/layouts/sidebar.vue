@@ -8,16 +8,18 @@
               <Sidebar
                 :collections="collections.data"
                 @item-selected="getItemSelected"
+                @other-selected="getOtherSelected"
                 @toggle-layout="toggleLayout"
                 :servers="filterServer"
-                class="w-1/5"
+                class="w-3/12"
+                style="max-width: 280px"
               ></Sidebar>
               <Content
                 v-if="element_selected !== 'show_create_mock'"
                 :item="item_select"
                 :item_link="item_link"
                 :uri_params="uri_param"
-                class="w-4/5"
+                class="w-10/12"
               >
               </Content>
               <MockServer
@@ -44,6 +46,7 @@ import {
   NDialogProvider,
 } from "naive-ui";
 import { v4 as uuidv4 } from "uuid";
+import { useURIStore } from "~/stores/test";
 //get all collection
 const message = useMessage();
 const dialog = useDialog();
@@ -55,7 +58,7 @@ const { data: sidebarList } = await useFetch(
 const element_selected = useState("toggle_mock_collection");
 const code_res = useState("code_response");
 const collections = ref(JSON.parse(JSON.stringify(sidebarList.value)));
-console.log(collections.value.data);
+const uriStore = useURIStore();
 const filterServer1 = collections.value.data.filter(
   (server) => server.is_server == true
 );
@@ -88,6 +91,7 @@ const getItemSelected = (bread_cum: Array, item: object) => {
   item_select.value = item;
 
   uri_param.value = item.uri_component ?? "";
+  uriStore.uri = uri_param.value;
 };
 const modeCollection = ref(true);
 const toggleLayout = () => {
@@ -102,7 +106,7 @@ const createMockServer = async (newapi: object, collection_name: string) => {
     id: uuid,
     requests: [],
     folders: [],
-
+    variable: "",
     is_server: true,
   };
   const request = {
@@ -112,6 +116,8 @@ const createMockServer = async (newapi: object, collection_name: string) => {
     method: newapi.method,
     uri_component: "",
     responses: [],
+    query: "",
+    header: "",
   };
 
   const response = {
@@ -196,6 +202,10 @@ const createMockApi = async (api: object) => {
   const status1 = JSON.parse(JSON.stringify(status.value));
 
   return status1.status;
+};
+const getOtherSelected = (item: Array) => {
+  item_link.value = item;
+  console.log("alo");
 };
 </script>
 
