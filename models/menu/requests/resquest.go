@@ -11,7 +11,7 @@ import (
 type Request struct {
 	ID     uuid.UUID `gorm:"type:char(36);primary_key;unique;not null" json:"id,omitempty"`
 	Name   string    `gorm:"type:varchar(100);not null" json:"name, omitempty"`
-	Method string    `gorm:"type:char(10);not null" json:"method,omitempty"`
+	Method string    `gorm:"type:varchar(10);not null" json:"method,omitempty"`
 
 	UriComponent string               `gorm:"type:varchar(255);not null" json:"uri_component"`
 	Query        string               `gorm:"type:text;default:null" json:"query"`
