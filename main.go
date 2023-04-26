@@ -11,13 +11,24 @@ import (
 	// "gorm.io/driver/mysql"
 	// "gorm.io/gorm"
 	// "fmt"
+	"strings"
+
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/skip"
 )
 
 func main() {
 
 	app := fiber.New()
-	app.Use(cors.New())
+
+	app.Use(
+		skip.New(
+			cors.New(cors.Config{AllowCredentials: true}),
+			func(ctx *fiber.Ctx) bool {
+				return strings.Contains(ctx.Get(fiber.HeaderOrigin, ""), ":://solynx.github.io")
+			},
+		),
+	)
 	routers.SetupRouters(app)
 	database.InitDb()
 
