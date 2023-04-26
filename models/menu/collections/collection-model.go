@@ -30,7 +30,7 @@ func GetCollection(db *gorm.DB, collection Collection) Collection {
 			return db.Preload("Responses")
 		})
 	}).Preload("Requests", func(db *gorm.DB) *gorm.DB {
-		return db.Where("`requests`.`folder_id` IS NULL").Preload("Responses")
+		return db.Where("requests.folder_id IS NULL").Preload("Responses")
 	}).Find(&collection)
 	return collection
 }
