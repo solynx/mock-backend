@@ -13,10 +13,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/gofiber/fiber/v2/middleware/logger"
+
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func SetupRouters(app *fiber.App) {
-
+	app.Use(cors.New())
 	mockApi := app.Group("/mock-api", logger.New())
 	api := app.Group("/:uuid/api", logger.New())
 	api.All("*", mockapi.CheckMock)
