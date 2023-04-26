@@ -6,7 +6,7 @@ import (
 	// "app/models/courses"
 	"app/database/migrations"
 
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -27,9 +27,11 @@ func ConnectDBLocal() *gorm.DB {
 	var err error
 	// timeZone := "Asia/Ho_Chi_Minh"
 
-	dsn := DB_USERNAME_STR + ":" + DB_PASSWORD_STR + "@tcp(" + DB_HOST_NUM + ":" + DB_PORT_NUM + ")/" + DB_NAME_STR + "?loc=Asia%2FBangkok&parseTime=true&time_zone=%27Asia%2FBangkok%27"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
+	// dsn := DB_USERNAME_STR + ":" + DB_PASSWORD_STR + "@tcp(" + DB_HOST_NUM + ":" + DB_PORT_NUM + ")/" + DB_NAME_STR + "?loc=Asia%2FBangkok&parseTime=true&time_zone=%27Asia%2FBangkok%27"
+	// db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	dsn := "postgres://db_mockapp_user:e1O2tvAlnxgEhP4pVJinHYy6S1Ku8qTg@dpg-ch4ajg9n852hpi1qq0lg-a/db_mockapp"
+	// postgres: //db_mockapp_user:e1O2tvAlnxgEhP4pVJinHYy6S1Ku8qTg@dpg-ch4ajg9n852hpi1qq0lg-a.oregon-postgres.render.com/db_mockapp
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Println("Err:  %v", err)
 		return nil

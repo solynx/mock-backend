@@ -2,10 +2,6 @@ package migrations
 
 import (
 	"app/models"
-	"app/models/answers"
-	"app/models/categories"
-	"app/models/exams"
-	"app/models/questions"
 
 	// Collection import
 	"app/models/menu/collections"
@@ -19,11 +15,11 @@ import (
 
 func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&exams.Exam{})
-	db.AutoMigrate(&answers.Answer{})
-	db.AutoMigrate(&questions.Question{})
+	// db.AutoMigrate(&exams.Exam{})
+	// db.AutoMigrate(&answers.Answer{})
+	// db.AutoMigrate(&questions.Question{})
 	db.AutoMigrate(&mock_server.MockApi{})
-	db.AutoMigrate(&categories.Category{})
+	// db.AutoMigrate(&categories.Category{})
 	db.AutoMigrate(&collections.Collection{})
 	db.AutoMigrate(&folders.Folder{})
 	db.AutoMigrate(&requests.Request{})
