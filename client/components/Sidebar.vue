@@ -28,11 +28,7 @@
       </ul>
 
       <div class="flex">
-        <n-upload
-          @finish="handleFinish"
-          action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
-          ref="uploadRef"
-        >
+        <n-upload @finish="handleFinish" action="google.com" ref="uploadRef">
           <n-button size="small" :default-upload="false" tertiary
             >Import</n-button
           >
@@ -1220,27 +1216,43 @@ const addCollectionWithJsonFile = async (collection_import: object) => {
         });
         collection_copy.folders.push(folder);
       } else {
+        console.log(item);
         const request = {
           id: uuidv4(),
           name: item.name,
           method: item.request.method ?? "GET",
-          uri_component: item.request ? item.request.url.raw : "",
+          uri_component: item.request
+            ? item.request.hasOwnProperty("url")
+              ? item.request.url.raw
+              : ""
+            : "",
           responses: [],
           collection_id: collection_copy.id,
           folder_id: null,
           query: "",
           header: "",
-          body: item.request.body.raw,
+          body: item.request.hasOwnProperty("body")
+            ? item.request.body.raw
+            : "",
         };
-        if (item.request.header.length) {
-          const jsonString = JSON.stringify(item.request.header);
-          const base64HeaderString = btoa(jsonString);
-          request.header = base64HeaderString;
+
+        if (item.request.hasOwnProperty("header")) {
+          if (item.request.header.length) {
+            const jsonString = JSON.stringify(item.request.header);
+            const base64HeaderString = btoa(jsonString);
+            request.header = base64HeaderString;
+          }
         }
-        if (item.request.url.query.length) {
-          const jsonString = JSON.stringify(item.request.url.query);
-          const base64QueryString = btoa(jsonString);
-          request.query = base64QueryString;
+
+        if (
+          item.request.hasOwnProperty("url") &&
+          item.request.url.hasOwnProperty("query")
+        ) {
+          if (item.request.url.query.length) {
+            const jsonString = JSON.stringify(item.request.url.query);
+            const base64QueryString = btoa(jsonString);
+            request.query = base64QueryString;
+          }
         }
         await useFetch("http://127.0.0.1:8000/admin/request.json", {
           method: "POST",

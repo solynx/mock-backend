@@ -5,7 +5,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "predeploy": "nuxt generate",
+    "deploy": "gh-pages -d dist"
   },
   "overrides": {
     "vue": "latest"
@@ -17,11 +19,13 @@
     "firebase-admin": "^11.6.0",
     "firebase-functions": "^4.3.0",
     "firebase-functions-test": "^3.0.0",
+    "gh-pages": "^5.0.0",
     "naive-ui": "^2.34.3",
     "nuxt": "^3.2.3",
     "postcss": "^8.4.21",
     "postcss-import": "^15.1.0",
     "postcss-loader": "^7.0.2",
+    "push-dir": "^0.4.1",
     "tailwindcss": "^3.2.7",
     "vfonts": "^0.0.3"
   },

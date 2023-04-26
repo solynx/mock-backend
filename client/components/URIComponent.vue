@@ -38,14 +38,13 @@
 <script setup>
 import consolaGlobalInstance from "consola";
 import { NSpace, NInputGroup, NSelect, NInput, NButton } from "naive-ui";
-import { useURIStore } from "~/stores/test";
+
 import { useFullUrlStore } from "~~/stores/uri_params";
 const props = defineProps({
   uri: Object,
   filter_param: Array,
 });
 
-const uriStore = useURIStore();
 const urlFull = useFullUrlStore();
 const { $test } = useNuxtApp();
 const { $updateParams } = useNuxtApp();

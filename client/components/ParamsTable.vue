@@ -20,7 +20,7 @@ import {
   DataTableRowKey,
 } from "naive-ui";
 import { useUriQP } from "~~/composables/useUriQP";
-import { useURIStore } from "~/stores/test";
+
 type RowData = {
   key: number;
   param: string;
@@ -29,8 +29,7 @@ type RowData = {
 };
 // const data = useState("data", () => createData());
 // const same_data = useState("data");
-const uriStore = useURIStore();
-const { uri, queries, url_changed } = uriStore;
+
 const data = useUriQP();
 const query = useState("query_active");
 const emit = defineEmits(["binding_param", "active_query"]);

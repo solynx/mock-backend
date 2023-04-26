@@ -51,18 +51,58 @@ import { useURIStore } from "~/stores/test";
 const message = useMessage();
 const dialog = useDialog();
 const placement = "bottom-right";
-const { data: sidebarList } = await useFetch(
-  "http://127.0.0.1:8000/admin/collection.json",
-  {}
-);
+// const { data: sidebarList } = await useFetch(
+//   "http://127.0.0.1:8000/admin/collection.json",
+//   {}
+// );
 const element_selected = useState("toggle_mock_collection");
 const code_res = useState("code_response");
-const collections = ref(JSON.parse(JSON.stringify(sidebarList.value)));
+// const collections = ref(JSON.parse(JSON.stringify(sidebarList.value)));
+const fakeData = [
+  {
+    id: "eea31c8d-5b83-44d8-bc79-e2a0e732f335",
+    name: "alid",
+    user_id: 1,
+    requests: [
+      {
+        id: "ecdd233b-c8ad-427d-beca-59fc9c18c5c9",
+        name: "/api/user",
+        method: "GET",
+        uri_component:
+          "http://localhost:8000/eea31c8d-5b83-44d8-bc79-e2a0e732f335/api/user",
+        query: "W3sia2V5IjoibGltaXQiLCJ2YWx1ZSI6IjEwIn1d",
+        header: "W10=",
+        body: "",
+        collection_id: "eea31c8d-5b83-44d8-bc79-e2a0e732f335",
+        responses: [
+          {
+            id: "c6dea9f7-b989-4c1b-af27-6ca4ac650b94",
+            name: "/api/user",
+            body: '{"user":2}',
+            method: "GET",
+            uri_component:
+              "http://localhost:8000/eea31c8d-5b83-44d8-bc79-e2a0e732f335/api/user",
+            request_id: "ecdd233b-c8ad-427d-beca-59fc9c18c5c9",
+            created_at: "2023-04-22T02:34:49.553+07:00",
+            updated_at: "2023-04-22T02:34:49.553+07:00",
+          },
+        ],
+        created_at: "2023-04-22T02:34:49.526+07:00",
+        updated_at: "2023-04-22T02:38:24.451+07:00",
+      },
+    ],
+    is_server: 0,
+    variable: "",
+    created_at: "2023-04-22T02:34:49.166+07:00",
+    updated_at: "2023-04-22T02:34:49.166+07:00",
+  },
+];
+const collections = ref(fakeData);
 const uriStore = useURIStore();
-const filterServer1 = collections.value.data.filter(
-  (server) => server.is_server == true
-);
-
+// const filterServer1 = collections.value.data.filter(
+//   (server) => server.is_server == true
+// );
+// const filterServer = ref(filterServer1);
 const handleSuccess = (url: string) => {
   dialog.success({
     title: "Create Mock Server Success!",
@@ -77,7 +117,7 @@ const handleSuccess = (url: string) => {
     },
   });
 };
-const filterServer = ref(filterServer1);
+
 const item_select = ref({});
 const item_link = ref<object[]>([]);
 const uri_param = ref("");
