@@ -18,9 +18,10 @@ import (
 )
 
 func NewMockApi(c *fiber.Ctx) error {
+
+	c.Append("Access-Control-Allow-Origin", "*")
 	db := database.Database
 	collection := new(collections.Collection)
-	c.Append("Access-Control-Allow-Origin", "*")
 	if err := c.BodyParser(&collection); err != nil {
 		return c.JSON(fiber.Map{"error": err, "message": "The data not valid", "status": false})
 	}
@@ -70,6 +71,7 @@ func RemoveMockApi(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"error": nil, "message": "Delete a api status", "status": false})
 }
 func CheckMock(c *fiber.Ctx) error {
+	c.Append("Access-Control-Allow-Origin", "*")
 	id := c.Params("uuid")
 
 	// Xử lý request ở đây
@@ -80,7 +82,6 @@ func CheckMock(c *fiber.Ctx) error {
 
 	db := database.Database
 	collection := collections.Collection{ID: uuid}
-	c.Append("Access-Control-Allow-Origin", "*")
 
 	root_path := c.Path()
 	tem_path := strings.Split(root_path, "/")
