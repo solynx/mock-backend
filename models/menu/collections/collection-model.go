@@ -10,7 +10,7 @@ func GetMenu(db *gorm.DB) (collections []Collection) {
 			return db.Preload("Responses")
 		})
 	}).Preload("Requests", func(db *gorm.DB) *gorm.DB {
-		return db.Where("`requests`.`folder_id` IS NULL").Preload("Responses")
+		return db.Where("requests.folder_id IS NULL").Preload("Responses")
 	}).Find(&collections)
 	return collections
 }
