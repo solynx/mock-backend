@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -35,7 +34,11 @@ func NewMockApi(c *fiber.Ctx) error {
 	if result {
 		data := mock_server.InitJsonFile{}
 		file, _ := json.MarshalIndent(data, "", " ")
+		if _, err := os.Stat("./storage"); os.IsNotExist(err) {
+			os.MkdirAll("./storage", os.ModePerm)
+		}
 		file_path := "./storage/" + collection.ID.String() + ".json"
+
 		_ = ioutil.WriteFile(file_path, file, 0644)
 		return c.JSON(fiber.Map{"error": nil, "message": "success", "status": true})
 	}
@@ -191,21 +194,17 @@ func loadMockResponses(id string) map[string][]mock_server.MockResponse {
 
 	if err != nil {
 
-		log.Fatal(err)
+		fmt.Println("Open file failed:", err)
 	}
 
 	mockResponses := make(map[string][]mock_server.MockResponse)
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	defer file.Close()
 
 	err = json.NewDecoder(file).Decode(&mockResponses)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Open file failed:", err)
 	}
 
 	return mockResponses
